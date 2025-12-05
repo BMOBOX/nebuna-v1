@@ -50,6 +50,7 @@ function Sidebar({ user }: { user?: Session["user"] }) {
                     ? "bg-zinc-800 text-white font-semibold"
                     : "text-gray-300 hover:bg-zinc-900 hover:text-white"
                 }`}
+                prefetch
               >
                 <span className="text-lg">{item.icon}</span>
                 <span>{item.name}</span>

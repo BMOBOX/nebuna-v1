@@ -124,6 +124,7 @@ export const authOptions: AuthOptions = {
     // ---------------------------------------
     async session({ session, token }) {
       session.user.id = token.id as string;
+      session.user.user_id = token.user_id as string;
       session.user.email = token.email as string;
       session.user.username = token.username as string;
       session.user.wallet = token.wallet as number;

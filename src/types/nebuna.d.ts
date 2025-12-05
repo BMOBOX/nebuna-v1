@@ -7,7 +7,8 @@ declare module "nebuna" {
     open_price: number;
     quantity: number;
     total: number;
-    pl: number;
+    PL: number;
     close_price: number;
+    created_at: string;
   }
 }

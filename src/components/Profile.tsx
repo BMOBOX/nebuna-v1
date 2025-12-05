@@ -59,7 +59,9 @@ function Profile({ user }: { user?: Session["user"] }) {
         </div>
 
         <div className="flex flex-col min-w-0 justify-center grow">
-          <p className="text-md font-bold truncate leading-tight">{userName}</p>
+          <p className="text-md font-bold truncate leading-tight text-cyan-50">
+            {userName}
+          </p>
           <p className="text-xs font-medium text-gray-400 truncate">
             {userEmail}
           </p>

@@ -1,5 +1,7 @@
+import { authOptions } from "@/lib/authOptions";
 import { transaction } from "nebuna";
-import { Session } from "next-auth";
+import { getServerSession, Session } from "next-auth";
+import { getSession } from "next-auth/react";
 
 export interface Stock {
   stock_name: string;
@@ -70,11 +72,12 @@ export const addstock = async (
 };
 
 // Get user transactions
-export const gettransaction = async (
-  user: Session["user"]
-): Promise<transaction[]> => {
-  const response = await fetch(`/api/transactions?id=${user.user_id}`);
-  1;
+export const gettransaction = async (): Promise<transaction[]> => {
+  const user = await getServerSession(authOptions);
+  console.log(user?.user.user_id);
+  const response = await fetch(
+    `http://localhost:3000/api/transactions?id=${user?.user.user_id}`
+  );
   if (!response.ok) throw new Error("Failed to fetch transactions");
   const result: transaction[] = await response.json();
   console.log(result);

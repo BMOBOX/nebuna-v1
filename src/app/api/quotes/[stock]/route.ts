@@ -5,7 +5,7 @@ import yahooFinance from "yahoo-finance2";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { stock: string } }
+  context: { params: Promise<{ stock: string }> }
 ) {
   const { stock } = await context.params;
   const yf = new yahooFinance();
