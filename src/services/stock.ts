@@ -76,7 +76,7 @@ export const gettransaction = async (): Promise<transaction[]> => {
   const user = await getServerSession(authOptions);
   console.log(user?.user.user_id);
   const response = await fetch(
-    `http://localhost:3000/api/transactions?id=${user?.user.user_id}`
+    `${process.env.NEXT_PUBLIC_URL}/api/transactions?id=${user?.user.user_id}`
   );
   if (!response.ok) throw new Error("Failed to fetch transactions");
   const result: transaction[] = await response.json();
