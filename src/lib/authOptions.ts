@@ -103,8 +103,6 @@ export const authOptions: AuthOptions = {
         token.username = user.name;
       }
 
-      console.log("Fetching wallet for:", token.id);
-
       const { data } = await supabaseAdmin
         .from("users")
         .select("wallet, id")

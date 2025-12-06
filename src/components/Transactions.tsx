@@ -1,4 +1,3 @@
-// app/trades/TradeTable.tsx  (or components/TradeTable.tsx)
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -14,6 +13,7 @@ import { ArrowUpRight, ArrowDownRight, Download, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { get } from "http";
 import { gettransaction } from "@/services/stock";
+import { transaction } from "nebuna";
 
 // Proper Type matching your exact API response
 export type Trade = {
@@ -30,8 +30,11 @@ export type Trade = {
   close_price: number | null;
 };
 
-export default async function TradeTable() {
-  const trades = await gettransaction();
+export default async function TradeTable({
+  transaction,
+}: {
+  transaction?: transaction[];
+}) {
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "dd MMM yyyy, HH:mm");
   };
@@ -44,7 +47,7 @@ export default async function TradeTable() {
     }).format(value);
   };
 
-  if (!trades || trades.length === 0) {
+  if (!transaction || transaction.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -75,7 +78,7 @@ export default async function TradeTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {trades.map((trade) => (
+        {transaction.map((trade) => (
           <TableRow key={trade.id}>
             <TableCell>
               <Badge

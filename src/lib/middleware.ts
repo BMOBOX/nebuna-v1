@@ -5,15 +5,23 @@ export async function middleware(req: any) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  // If logged in → prevent access to /login or /signup
+  // Logged in → prevent access to login/signup
   if (token && (pathname === "/login" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Not logged in → prevent access to /dashboard
+  if (!token && pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
 }
 
-// Match only login/signup
 export const config = {
-  matcher: ["/login", "/signup"],
+  matcher: [
+    "/login",
+    "/signup",
+    "/dashboard/:path*", // Protect all dashboard routes
+  ],
 };

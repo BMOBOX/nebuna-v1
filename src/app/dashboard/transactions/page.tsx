@@ -1,24 +1,19 @@
 "use client";
 import Transactions from "@/components/Transactions";
+import { transaction } from "nebuna";
 import { useSession } from "next-auth/react";
-import router from "next/router";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Page() {
+  const { data: session, status } = useSession();
+
   useEffect(() => {
-    const { data: session, status } = useSession();
     if (status === "unauthenticated") {
-      router.replace("/signin");
+      redirect("/signin");
     }
-  }, [status, router]);
+  }, [status]);
 
   if (status === "loading") return null;
-  return (
-    <div className="shadcn-theme dark min-h-screen">
-      <h1 className="text-3xl font-bold tracking-tight mb-6">
-        Transactions History
-      </h1>
-      <Transactions />
-    </div>
-  );
+  return;
 }

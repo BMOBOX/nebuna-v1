@@ -27,7 +27,6 @@ export const close = async (
       }),
     }
   );
-  console.log(response.json());
 };
 
 export const buy = async (
@@ -55,7 +54,6 @@ export const buy = async (
       }),
     }
   );
-  console.log(response.json());
 };
 
 export const sell = async (
@@ -81,5 +79,4 @@ export const sell = async (
       }),
     }
   );
-  console.log(response.json());
 };

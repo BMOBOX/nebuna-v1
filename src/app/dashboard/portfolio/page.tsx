@@ -1,5 +1,4 @@
 "use client";
-import Transactions from "@/components/Transactions";
 import { useSession } from "next-auth/react";
 import router from "next/router";
 import { useEffect } from "react";
