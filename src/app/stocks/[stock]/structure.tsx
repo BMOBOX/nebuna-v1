@@ -66,6 +66,11 @@ export function Structure({
   async function toggleWatchlist() {
     if (!session?.user?.id || !data?.symbol) return;
 
+    if ((watchlist ? "remove" : "add") === "add") {
+      toast.success("Added to Watchlist!");
+    } else toast.error("Removed from Watchlist!");
+    setWatchList(!watchlist);
+
     try {
       const res = await fetch(`/api/watchlist`, {
         method: "POST",
@@ -81,11 +86,6 @@ export function Structure({
         toast.error(data.error || "Something went wrong");
         return null;
       }
-
-      if ((watchlist ? "remove" : "add") === "add") {
-        toast.success("Added to Watchlist!");
-      } else toast.error("Removed from Watchlist!");
-      setWatchList(!watchlist);
 
       return data; // updated list
     } catch (err) {
