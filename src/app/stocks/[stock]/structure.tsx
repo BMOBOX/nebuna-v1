@@ -220,31 +220,28 @@ export function Structure({
 
   async function closePosition(): Promise<void> {
     if (!session?.user?.user_id || !data?.symbol || !owned) return;
+    toast.success("Position closed!");
 
+    // Remove this stock from orders
+    setOrders((prev) => prev.filter((o) => o.stock_name !== data.symbol));
+    const own = owned;
+    // Reset owned and profit/loss
+    setOwned(0);
+    setProfitLoss(0);
     try {
       // Sell all shares
       const resp = await close(
         data.symbol,
         session.user.user_id,
         data.shortName,
-        owned,
+        own,
         priceu,
         inrPrice,
         type_
       );
 
       if (resp.success) {
-        toast.success(resp.message || "Position closed!");
-
-        // Update wallet in session
         session.user.wallet = resp.remainingWallet;
-
-        // Remove this stock from orders
-        setOrders((prev) => prev.filter((o) => o.stock_name !== data.symbol));
-
-        // Reset owned and profit/loss
-        setOwned(0);
-        setProfitLoss(0);
       } else {
         toast.error(resp.error || "Failed to close position");
       }
