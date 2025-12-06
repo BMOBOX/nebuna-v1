@@ -35,7 +35,7 @@ export default async function TradeTable({
   transaction,
   sortBy = "time", // "time" | "PL"
 }: {
-  transaction?: Trade[];
+  transaction?: transaction[];
   sortBy?: "time" | "PL";
 }) {
   const formatDate = (dateString: string) => {
