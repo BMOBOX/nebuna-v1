@@ -133,7 +133,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
         secondsVisible: false,
       },
       width: chartContainerRef.current.clientWidth,
-      height: 500,
+      height: chartContainerRef.current.clientHeight,
     });
 
     chartRef.current = chart;
@@ -168,6 +168,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
     const handleResize = () => {
       chart.applyOptions({
         width: chartContainerRef.current?.clientWidth ?? 600,
+        height: chartContainerRef.current?.clientHeight ?? 500,
       });
     };
 
@@ -193,14 +194,14 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
   }, [data]);
 
   return (
-    <div className="relative w-full">
+    <div className="w-full h-full relative">
       <div
         ref={chartContainerRef}
-        className="w-full h-[500px] bg-[#161a1f] rounded-lg shadow-lg"
+        className="w-full h-full bg-[#161a1f] rounded-lg shadow-lg"
       />
 
       {data.length === 0 && (
-        <div className="text-center text-gray-400 mt-4">
+        <div className="absolute inset-0 flex items-center justify-center text-gray-400">
           Loading chart data...
         </div>
       )}

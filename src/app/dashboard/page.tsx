@@ -12,11 +12,14 @@ function Page() {
     if (status === "unauthenticated") {
       redirect("/signin");
     }
+    if (status === "authenticated") {
+      redirect("/dashboard/portfolio");
+    }
   }, [status]);
 
   if (status === "loading") return null;
 
-  return <div className="flex">hi</div>;
+  return null;
 }
 
 export default Page;

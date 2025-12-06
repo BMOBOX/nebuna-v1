@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { get } from "http";
 import { gettransaction } from "@/services/stock";
 import { transaction } from "nebuna";
+import Link from "next/link";
 
 // Proper Type matching your exact API response
 export type Trade = {
@@ -32,8 +33,10 @@ export type Trade = {
 
 export default async function TradeTable({
   transaction,
+  sortBy = "time", // "time" | "PL"
 }: {
-  transaction?: transaction[];
+  transaction?: Trade[];
+  sortBy?: "time" | "PL";
 }) {
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "dd MMM yyyy, HH:mm");
@@ -49,18 +52,40 @@ export default async function TradeTable({
 
   if (!transaction || transaction.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Trades</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground py-8">
-            No trades found.
-          </p>
-        </CardContent>
-      </Card>
+      <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Type</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Symbol</TableHead>
+              <TableHead>Stock</TableHead>
+              <TableHead className="text-right">Qty</TableHead>
+              <TableHead className="text-right">Total Invested</TableHead>
+              <TableHead className="text-right">Open Price</TableHead>
+              <TableHead className="text-right">Close Price</TableHead>
+              <TableHead className="text-right">P&L</TableHead>
+            </TableRow>
+          </TableHeader>
+        </Table>
+        <p className="text-center text-muted-foreground py-8">
+          Nothing to look here :{")"}
+        </p>
+      </>
     );
   }
+
+  // Sort transactions
+  const sortedTransactions = [...transaction].sort((a, b) => {
+    if (sortBy === "time") {
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    } else if (sortBy === "PL") {
+      return b.PL - a.PL; // descending PL
+    }
+    return 0;
+  });
 
   return (
     <Table>
@@ -78,15 +103,15 @@ export default async function TradeTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transaction.map((trade) => (
+        {sortedTransactions.map((trade) => (
           <TableRow key={trade.id}>
             <TableCell>
               <Badge
-                variant={trade.type === "BUY" ? "default" : "destructive"}
+                variant="default"
                 className={
                   trade.type === "BUY"
                     ? "bg-green-600 hover:bg-green-700"
-                    : "bg-red-600 hover:bg-red-700"
+                    : "bg-red-600 text-gray-100 hover:bg-red-700"
                 }
               >
                 {trade.type}
@@ -95,11 +120,16 @@ export default async function TradeTable({
             <TableCell className="font-medium">
               {formatDate(trade.created_at)}
             </TableCell>
-            <TableCell className="font-semibold text-primary">
-              {trade.symbol}
+            <TableCell className="font-medium text-primary">
+              <Link
+                href={`/stocks/${trade.symbol}`} // change this to your stock detail route
+                className="text-blue-500/90 hover:underline"
+              >
+                {trade.symbol}
+              </Link>
             </TableCell>
-            <TableCell className="capitalize">{trade.stock_name}</TableCell>
 
+            <TableCell className="capitalize">{trade.stock_name}</TableCell>
             <TableCell className="text-right font-medium">
               {trade.quantity.toLocaleString()}
             </TableCell>

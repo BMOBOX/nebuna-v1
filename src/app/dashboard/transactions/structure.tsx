@@ -14,6 +14,9 @@ export function Structure({
   return (
     <>
       <div className="shadcn dark">
+        <h1 className="text-3xl font-bold tracking-tight mb-6">
+          Transaction History
+        </h1>
         <Transactions transaction={transaction} />
       </div>
       <div>{children}</div>

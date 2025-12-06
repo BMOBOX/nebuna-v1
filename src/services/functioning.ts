@@ -1,82 +1,80 @@
 export const close = async (
   symbol: any,
   id: any,
-  balance: any,
   stock_name: any,
   quantity: any,
   price: any,
   close_price: any,
   type: any
 ) => {
-  const response = await fetch(
-    `https://backend-laplace0-0-laplace0-0s-projects.vercel.app/api/close`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-        symbol: symbol,
-        balance: balance,
-        stock_name: stock_name,
-        quantity: quantity,
-        price: price,
-        close_price: close_price,
-        type: type,
-      }),
-    }
+  console.log(
+    "close",
+    symbol,
+    id,
+    stock_name,
+    quantity,
+    price,
+    close_price,
+    type
   );
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/close`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: id,
+      symbol,
+      stock_name,
+      quantity,
+      price,
+      close_price,
+      type,
+    }),
+  });
+  return response.json();
 };
 
 export const buy = async (
+  userId: any,
   symbol: any,
-  stock_name: any,
   quantity: any,
-  price: any,
-  id: any,
-  balance: any
+  price: any
 ) => {
-  const response = await fetch(
-    `https://backend-laplace0-0-laplace0-0s-projects.vercel.app/api/buy`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-        symbol: symbol,
-        stock_name: stock_name,
-        quantity: quantity,
-        price: price,
-        balance: balance,
-      }),
-    }
-  );
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/buy`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: userId,
+      symbol: symbol,
+      quantity: Number(quantity),
+      price: Number(price),
+    }),
+  });
+
+  return response.json();
 };
 
 export const sell = async (
+  userId: any,
   symbol: any,
   quantity: any,
-  price: any,
-  id: any,
-  balance: any
+  price: any
 ) => {
-  const response = await fetch(
-    `https://backend-laplace0-0-laplace0-0s-projects.vercel.app/api/sell`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-        symbol: symbol,
-        quantity: quantity,
-        price: price,
-        balance: balance,
-      }),
-    }
-  );
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/sell`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: userId,
+      symbol: symbol,
+      quantity: Number(quantity),
+      price: Number(price),
+    }),
+  });
+
+  return response.json();
 };
