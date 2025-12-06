@@ -1,11 +1,8 @@
 "use client";
-import { MdOutlineAccountBalanceWallet } from "react-icons/md";
-import React from "react";
 import Profile from "@/components/Profile";
-import { FaWallet, FaExchangeAlt, FaStar, FaChartLine } from "react-icons/fa";
+import { FaWallet, FaExchangeAlt, FaStar } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Wallet from "./Wallet";
 import { Session } from "next-auth";
 
@@ -20,7 +17,6 @@ function Sidebar({ user }: { user?: Session["user"] }) {
       href: "dashboard/transactions",
     },
     { name: "Watchlist", icon: <FaStar />, href: "dashboard/watchlist" },
-    { name: "Market", icon: <FaChartLine />, href: "dashboard/market" },
   ];
 
   return (
