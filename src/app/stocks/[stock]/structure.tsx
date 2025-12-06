@@ -216,8 +216,6 @@ export function Structure({
     }
   }
 
-  console.log(data);
-
   async function closePosition(): Promise<void> {
     if (!session?.user?.user_id || !data?.symbol || !owned) return;
     toast.success("Position closed!");

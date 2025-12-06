@@ -7,16 +7,6 @@ export const close = async (
   close_price: any,
   type: any
 ) => {
-  console.log(
-    "close",
-    symbol,
-    id,
-    stock_name,
-    quantity,
-    price,
-    close_price,
-    type
-  );
   const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/close`, {
     method: "POST",
     headers: {

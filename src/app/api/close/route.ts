@@ -39,8 +39,6 @@ export async function POST(req: Request) {
       .eq("user_id", userId)
       .eq("stock_name", symbol);
 
-    console.log("Deleted rows:", deletedRows);
-
     // 1️⃣ Fetch current wallet
     const { data: userData, error: userError } = await supabase
       .from("users")
