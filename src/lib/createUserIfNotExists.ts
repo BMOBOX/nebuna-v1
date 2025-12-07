@@ -1,17 +1,13 @@
 // lib/createUserIfNotExists.ts ← FINAL FIXED VERSION
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
-export async function createUserIfNotExists(
-  userId: string,
-  email: string,
-  fullName?: string
-) {
+export async function createUserIfNotExists(email: string, fullName?: string) {
   try {
     // check if user exists first
     const { data, error } = await supabaseAdmin
       .from("users")
-      .select("id")
-      .eq("id", userId)
+      .select("email")
+      .eq("email", email)
       .maybeSingle();
 
     if (error) throw error;
