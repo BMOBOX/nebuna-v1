@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nebuna - From Paper to Profit
+
+[![Website](https://img.shields.io/badge/Website-Live-blue)](https://nebuna-paper.vercel.app)
+
+Nebuna is a modern **paper trading platform** that lets you simulate stock trading with **real-time market data**, **live charts**, and a **clean user interface**. Track your investments, see live P&L, and practice trading without risking real money.
+
+---
+
+## Features
+
+- 📈 **Real-time quotes**: Live market prices updated every 2 seconds.
+- 💹 **Portfolio tracking**: See invested value, current value, and overall P&L.
+- 🌐 **Currency conversion**: All prices are shown in INR, even for foreign stocks.
+- 🖥️ **Responsive UI**: Clean and intuitive interface for desktop and mobile.
+- 🔐 **Authentication**: Sign in via Google or email/password.
+- 🖼️ **Charts & Analytics**: Visualize stock performance over time (coming soon).
+
+---
+
+## Screenshots
+
+### Dashboard (portfolio)
+
+[![Screenshot-2025-12-07-at-8-43-02-PM.png](https://i.postimg.cc/sX0XRDFw/Screenshot-2025-12-07-at-8-43-02-PM.png)](https://postimg.cc/zbK5CNGg)
+
+### Dashboard (Transactions)
+
+[![Screenshot-2025-12-07-at-8-46-17-PM.png](https://i.postimg.cc/yxjzzLSK/Screenshot-2025-12-07-at-8-46-17-PM.png)](https://postimg.cc/V0JhqBRZ)
+
+### Dashboard (Watchlist)
+
+[![Screenshot-2025-12-07-at-8-44-57-PM.png](https://i.postimg.cc/7YNLxVyq/Screenshot-2025-12-07-at-8-44-57-PM.png)](https://postimg.cc/kBBCsW4H)
+
+### Stocks Page
+
+[![Screenshot-2025-12-07-at-8-46-55-PM.png](https://i.postimg.cc/BZpWbwX3/Screenshot-2025-12-07-at-8-46-55-PM.png)](https://postimg.cc/7b5tQ93t)
+
+### Search results
+
+[![image.png](https://i.postimg.cc/V6sRV41M/image.png)](https://postimg.cc/Z9gp98WK)
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js >= 18
+- Yarn or npm
+- A Supabase project for authentication and database
+- Google OAuth credentials (for Google Sign-in)
+
+### Installation
 
 ```bash
-npm run dev
+# Clone the repo
+git clone https://github.com/BMOBOX/nebuna-v1.git
+cd nebuna
+
+# Install dependencies
+yarn install
 # or
+npm install
+
+# Run development server
 yarn dev
 # or
-pnpm dev
-# or
-bun dev
+npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
