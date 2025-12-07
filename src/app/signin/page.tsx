@@ -18,28 +18,10 @@ const signinSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function Page() {
+export default function Signin() {
   const { data: session, status } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorParam, setErrorParam] = useState<string | null>(null);
-
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const err = query.get("error");
-    setErrorParam(err);
-  }, []);
-
-  useEffect(() => {
-    const error = errorParam;
-    if (error === "duplicate_email") {
-      toast.error("An account with this email already exists. Please sign in.");
-      redirect("/signin");
-    } else if (error === "OAuthSignin") {
-      toast.error("Failed to sign in with Google.");
-      redirect("/signin");
-    }
-  }, [errorParam]);
 
   // Redirect if already signed in
   if (status === "authenticated") {
