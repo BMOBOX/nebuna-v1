@@ -19,10 +19,9 @@ export async function createUserIfNotExists(
     if (!data) {
       // create user if not exists
       const { error: insertError } = await supabaseAdmin.from("users").insert({
-        id: userId,
-        email,
-        full_name: fullName,
-        wallet: 0,
+        user_name: fullName,
+        email: email,
+        wallet: 100000,
       });
 
       if (insertError) throw insertError;
