@@ -13,7 +13,6 @@ function Page() {
       redirect("/signin");
     }
     if (status === "authenticated") {
-      redirect("/dashboard/portfolio");
     }
   }, [status]);
 
