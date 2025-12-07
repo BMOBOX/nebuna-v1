@@ -2,7 +2,7 @@
 import Header from "@/components/Header";
 import StarsBackground from "@/components/StarsBackground";
 import Image from "next/image";
-import dashboard from "@/assets/images/dashboard.png";
+import dashboard from "../../public/dashboard_.png";
 import HeroCTA from "@/components/HeroCTA";
 import { motion } from "framer-motion"; // Import motion
 
@@ -37,7 +37,7 @@ function Page() {
               width={1080}
               height={2040}
               alt="dashboard"
-              className="relative z-10 shadow-lg"
+              className="relative z-10 shadow-lg rounded-md"
               priority
             />
           </motion.div>

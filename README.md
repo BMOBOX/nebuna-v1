@@ -21,7 +21,7 @@ Nebuna is a modern **paper trading platform** that lets you simulate stock tradi
 
 ### Landing page
 
-[![Screenshot-2025-12-07-at-8-56-02-PM.png](https://i.postimg.cc/DyKVwJrq/Screenshot-2025-12-07-at-8-56-02-PM.png)](https://postimg.cc/G9zgMpS2)
+[![Screenshot-2025-12-07-at-9-08-10-PM.png](https://i.postimg.cc/KYLGWSxk/Screenshot-2025-12-07-at-9-08-10-PM.png)](https://postimg.cc/Lq9FqWq2)
 
 ### Dashboard (portfolio)
 
