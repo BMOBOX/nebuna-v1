@@ -534,9 +534,9 @@ export function Structure({
               <div className="flex justify-between items-center text-gray-300 text-sm border-t border-zinc-700/80 pt-4 mt-4">
                 <span>Balance:</span>
                 <span
-                  className={`bg-zinc-800/60 px-3 py-1 rounded-md w-28 text-center border border-zinc-700`}
+                  className={`bg-zinc-800/60 px-3 py-1 rounded-md w-32 text-center border border-zinc-700`}
                 >
-                  ₹{session?.user.wallet}
+                  ₹{session?.user.wallet.toFixed(2)}
                 </span>
               </div>
 
@@ -635,9 +635,9 @@ export function Structure({
               <div className="flex justify-between items-center text-gray-300 text-sm border-t border-zinc-700/80 pt-4 mt-4">
                 <span>Balance:</span>
                 <span
-                  className={`bg-zinc-800/60 px-3 py-1 rounded-md w-28 text-center border border-zinc-700`}
+                  className={`bg-zinc-800/60 px-3 py-1 rounded-md w-32 text-center border border-zinc-700`}
                 >
-                  ₹{session?.user.wallet}
+                  ₹{session?.user.wallet.toFixed(2)}
                 </span>
               </div>
 
