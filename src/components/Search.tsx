@@ -103,7 +103,7 @@ function Search() {
                   <Link
                     key={index}
                     href={`/stocks/${item.symbol}`}
-                    onClick={(e) => {
+                    onMouseDown={(e) => {
                       e.preventDefault();
                       handleLinkClick(item.symbol);
                     }}
