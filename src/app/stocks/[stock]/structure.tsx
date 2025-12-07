@@ -54,7 +54,6 @@ export function Structure({
           );
           const data = await response.json();
           const rates = data.rates;
-          console.log(rates);
           setInrPrice(rates["INR"] * d.regularMarketPrice);
           setPrice(d.regularMarketPrice);
         } else {
