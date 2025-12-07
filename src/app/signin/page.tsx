@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -22,7 +22,18 @@ export default function Signin() {
   const { data: session, status } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+  const params = useSearchParams();
+  const error = params.get("error");
+
+  useEffect(() => {
+    if (error === "duplicate_email") {
+      toast.error("An account with this email already exists. Please sign in.");
+      redirect("/signin");
+    } else if (error === "OAuthSignin") {
+      toast.error("Failed to sign in with Google.");
+      redirect("/signin");
+    }
+  }, [error]);
 
   // Redirect if already signed in
   if (status === "authenticated") {
@@ -54,6 +65,7 @@ export default function Signin() {
         toast.success("Signed in successfully!");
         redirect("/dashboard");
       } catch (err) {
+        console.error(err);
         setIsSubmitting(false);
       }
     },

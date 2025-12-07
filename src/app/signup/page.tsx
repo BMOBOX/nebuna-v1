@@ -8,9 +8,10 @@ import * as Yup from "yup";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import { useSession, signIn } from "next-auth/react";
+import { toast } from "react-toastify";
 
 // Validation with username
 const signupSchema = Yup.object().shape({
@@ -31,6 +32,15 @@ const signupSchema = Yup.object().shape({
 export default function Signup() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("duplicate")) {
+      toast.error(
+        "Account already exists! Please sign in with your credentials."
+      );
+    }
+  }, [searchParams]);
 
   // ALL HOOKS AT THE TOP — NEVER AFTER ANY RETURN!
   const [showPassword, setShowPassword] = useState(false);
@@ -220,7 +230,7 @@ export default function Signup() {
 
         <button
           onClick={() => signIn("google")}
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-600 py-3.5 transition hover:bg-gray-900"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-600 py-3.5 transition hover:bg-gray-900 cursor-pointer"
         >
           <FcGoogle className="text-2xl" />
           Continue with Google

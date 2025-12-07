@@ -81,13 +81,23 @@ export const authOptions: AuthOptions = {
       const isGoogle = account?.provider === "google";
       const isSignup = (user as any)._isSignup === true;
 
-      // create user only for google or signup
       if (isGoogle || isSignup) {
-        await createUserIfNotExists(
-          user.id!,
-          user.email!,
-          user.name || undefined
-        );
+        try {
+          await createUserIfNotExists(
+            user.id!,
+            user.email!,
+            user.name || undefined
+          );
+        } catch (err: any) {
+          // If duplicate key error (Supabase throws code 23505)
+          if (err.code === "23505" || err.message?.includes("duplicate")) {
+            // Redirect to signin with query param
+
+            return false;
+          }
+          console.error("Error creating user:", err);
+          return false;
+        }
       }
 
       return true;
