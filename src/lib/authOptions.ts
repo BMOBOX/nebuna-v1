@@ -83,11 +83,7 @@ export const authOptions: AuthOptions = {
 
       // safely create user
       if (isGoogle || isSignup) {
-        await createUserIfNotExists(
-          user.id!,
-          user.email!,
-          user.name || undefined
-        );
+        await createUserIfNotExists(user.email!, user.name || undefined);
       }
 
       return true;
