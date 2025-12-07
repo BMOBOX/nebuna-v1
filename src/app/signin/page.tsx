@@ -70,7 +70,6 @@ export default function Signin() {
     const result = await signIn("google", { redirect: false });
     console.log(result);
     if (!result) {
-      toast.error("Google sign-in failed!");
       router.push("/signin");
     } else if (result?.ok) {
       router.push("/dashboard");
