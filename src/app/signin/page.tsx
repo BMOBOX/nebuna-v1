@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -20,7 +20,6 @@ export default function Signin() {
   const { data: session, status } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   // Redirect if already signed in
   if (status === "authenticated") {
     redirect("/dashboard");
@@ -51,7 +50,6 @@ export default function Signin() {
         toast.success("Signed in successfully!");
         redirect("/dashboard");
       } catch (err) {
-        console.error(err);
         setIsSubmitting(false);
       }
     },
