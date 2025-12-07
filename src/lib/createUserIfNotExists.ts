@@ -4,27 +4,33 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 export async function createUserIfNotExists(
   userId: string,
   email: string,
-  username?: string
+  fullName?: string
 ) {
-  // Check if row already exists
-  const { data: existing } = await supabaseAdmin
-    .from("users")
-    .select("id")
-    .eq("id", userId)
-    .maybeSingle();
+  try {
+    // check if user exists first
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .eq("id", userId)
+      .maybeSingle();
 
-  if (existing) return;
+    if (error) throw error;
 
-  // INSERT WITH CORRECT TYPES
-  const { error } = await supabaseAdmin.from("users").insert({
-    email: email,
-    user_name: username || email.split("@")[0],
-    wallet: 100000, // ← number, NOT string
-    // DO NOT pass anything else here
-  });
+    if (!data) {
+      // create user if not exists
+      const { error: insertError } = await supabaseAdmin.from("users").insert({
+        id: userId,
+        email,
+        full_name: fullName,
+        wallet: 0,
+      });
 
-  if (error) {
-    console.error("Failed to insert into public.users:", error);
-    throw error;
+      if (insertError) throw insertError;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("createUserIfNotExists error:", err);
+    return false;
   }
 }

@@ -81,7 +81,7 @@ export const authOptions: AuthOptions = {
       const isGoogle = account?.provider === "google";
       const isSignup = (user as any)._isSignup === true;
 
-      // create user only for google or signup
+      // safely create user
       if (isGoogle || isSignup) {
         await createUserIfNotExists(
           user.id!,
