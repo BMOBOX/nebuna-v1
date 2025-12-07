@@ -3,16 +3,17 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = [
-  "#10B981", // emerald
-  "#34D399", // teal-green
-  "#6EE7B7", // soft mint
-  "#A7F3D0", // very soft green
-  "#F87171", // soft red
-  "#FCA5A5", // light red/pink
-  "#FBBF24", // amber/yellow
-  "#FCD34D", // light yellow
-  "#60A5FA", // blue
-  "#93C5FD", // light blue
+  "#F13C59", // red
+  "#3B82F6", // blue
+  "#EA5F89", // orange
+  "#10B981", // green
+  "#6366F1", // indigo
+  "#8B5CF6", // violet
+  "#EC4899", // pink
+  "#F97316", // deep orange
+  "#14B8A6", // teal
+  "#22D3EE", // cyan
+  "#A3E635", // lime
 ];
 
 export default function PortfolioPieChart({ stocks }: { stocks?: any[] }) {
@@ -25,8 +26,8 @@ export default function PortfolioPieChart({ stocks }: { stocks?: any[] }) {
   }));
 
   return (
-    <div className="w-72 h-60 bg-zinc-900/40 border rounded-lg shadow-sm p-2">
-      <h3 className="text-xs font-semibold text-gray-300 text-center">
+    <div className="w-72 h-60 bg-zinc-900/40 border rounded-lg shadow-sm">
+      <h3 className="text-xs font-semibold text-gray-300 text-center mt-2">
         Portfolio Quantity Distribution
       </h3>
 
@@ -72,7 +73,7 @@ export default function PortfolioPieChart({ stocks }: { stocks?: any[] }) {
         </div>
 
         {/* Legend */}
-        <div className="w-20 flex flex-col justify-center items-start ml-4">
+        <div className="w-20 flex flex-col justify-center items-start ml-4 mr-4">
           {pieData.map((d, index) => (
             <div
               key={index}

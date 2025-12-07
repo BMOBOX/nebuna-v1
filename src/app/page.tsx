@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import Header from "@/components/Header";
 import StarsBackground from "@/components/StarsBackground";
 import Image from "next/image";

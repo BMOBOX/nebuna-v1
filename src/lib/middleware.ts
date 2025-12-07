@@ -6,13 +6,13 @@ export async function middleware(req: any) {
   const { pathname } = req.nextUrl;
 
   // Logged in → prevent access to login/signup
-  if (token && (pathname === "/login" || pathname === "/signup")) {
+  if (token && (pathname === "/signin" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // Not logged in → prevent access to /dashboard
   if (!token && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/sginin", req.url));
   }
 
   return NextResponse.next();
@@ -20,7 +20,7 @@ export async function middleware(req: any) {
 
 export const config = {
   matcher: [
-    "/login",
+    "/signin",
     "/signup",
     "/dashboard/:path*", // Protect all dashboard routes
   ],
