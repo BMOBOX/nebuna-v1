@@ -3,18 +3,34 @@
 import { useState, useEffect } from "react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
+// ---------- SERVER OR CLIENT CURRENCY CONVERTER ----------
+async function convertToINR(amount: number, currency: string) {
+  if (!currency || currency === "INR") return amount;
+
+  try {
+    const res = await fetch(
+      `https://api.exchangerate-api.com/v4/latest/${currency}`
+    );
+    const data = await res.json();
+    const rate = data.rates["INR"];
+    return amount * rate;
+  } catch {
+    return amount;
+  }
+}
+
 export default function PnLCard({
   stocks,
-  investedValue_,
-  currentValue_,
+  investedValue_: investedInit,
+  currentValue_: currentInit,
 }: {
   stocks?: any[];
   investedValue_?: number;
   currentValue_?: number;
 }) {
   const [items, setItems] = useState(stocks || []);
-  const [investedValue, setInvestedValue] = useState(investedValue_ || 0);
-  const [currentValue, setCurrentValue] = useState(currentValue_ || 0);
+  const [investedValue, setInvestedValue] = useState(investedInit || 0);
+  const [currentValue, setCurrentValue] = useState(currentInit || 0);
 
   // Fetch live quotes
   const fetchQuotes = async (symbols: string[]) => {
@@ -35,31 +51,35 @@ export default function PnLCard({
     }
   };
 
-  // Update items and calculate totals
+  // Update P&L with live INR prices
   const updatePnL = async () => {
     const symbols = items.map((i) => i.stock_name);
     if (!symbols.length) return;
 
     const map = await fetchQuotes(symbols);
-    const updatedItems = items.map((item) => ({
-      ...item,
-      quote: map[item.stock_name] || item.quote,
-    }));
 
-    setItems(updatedItems);
-
-    // Recalculate invested and current value
     let invested = 0;
     let current = 0;
-    updatedItems.forEach((item) => {
-      const qty = Number(item.quantity) || 0;
-      const buyPrice = Number(item.stock_price) || 0;
-      const livePrice = item.quote?.regularMarketPrice || buyPrice;
 
-      invested += qty * buyPrice;
-      current += qty * livePrice;
-    });
+    const updatedItems = await Promise.all(
+      items.map(async (item) => {
+        const quote = map[item.stock_name] || item.quote;
+        const qty = Number(item.quantity) || 0;
+        const buyPrice = Number(item.stock_price) || 0;
 
+        invested += qty * buyPrice;
+
+        const livePrice = quote?.regularMarketPrice ?? buyPrice;
+        const currency = quote?.currency || "INR";
+
+        const liveINR = await convertToINR(livePrice, currency);
+        current += qty * liveINR;
+
+        return { ...item, quote, liveINR };
+      })
+    );
+
+    setItems(updatedItems);
     setInvestedValue(invested);
     setCurrentValue(current);
   };
@@ -70,9 +90,8 @@ export default function PnLCard({
     return () => clearInterval(interval);
   }, [items]);
 
-  const pnl = investedValue - currentValue;
+  const pnl = currentValue - investedValue;
   const pnlPercent = investedValue > 0 ? (pnl / investedValue) * 100 : 0;
-
   const isProfit = pnl > 0;
   const isLoss = pnl < 0;
 

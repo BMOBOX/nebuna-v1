@@ -46,14 +46,21 @@ export function Structure({
   useEffect(() => {
     fetch(`/api/quotes/${stock}`)
       .then((r) => r.json())
-      .then((d) => {
+      .then(async (d) => {
         setData(d);
-        const converted =
-          d.currency === "USD"
-            ? d.regularMarketPrice * 83.5
-            : d.regularMarketPrice;
-        setInrPrice(converted);
-        if (d.currency !== "INR") setPrice(d.regularMarketPrice);
+        if (d.currency != "INR") {
+          const response = await fetch(
+            `https://api.exchangerate-api.com/v4/latest/${d.currency}`
+          );
+          const data = await response.json();
+          const rates = data.rates;
+          console.log(rates);
+          setInrPrice(rates["INR"] * d.regularMarketPrice);
+          setPrice(d.regularMarketPrice);
+        } else {
+          setInrPrice(d.regularMarketPrice);
+          setPrice(d.regularMarketPrice);
+        }
       });
   }, [stock]);
 

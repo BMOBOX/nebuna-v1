@@ -22,15 +22,30 @@ export const metadata: Metadata = {
     "Experience paper trading with real-time data, live charts, and a clean user interface.",
 };
 
+// --------- SERVER-SIDE CURRENCY CONVERTER ---------
+async function convertToINR(amount: number, currency: string) {
+  if (!currency || currency === "INR") return amount;
+
+  try {
+    const res = await fetch(
+      `https://api.exchangerate-api.com/v4/latest/${currency}`
+    );
+    const data = await res.json();
+    const rate = data.rates["INR"];
+    return amount * rate;
+  } catch {
+    return amount;
+  }
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
-  let stocks: any[] = [];
-  let symbols: string[] = [];
 
+  let stocks: any[] = [];
   let investedValue = 0;
   let currentValue = 0;
 
@@ -45,10 +60,9 @@ export default async function RootLayout({
       if (error) throw error;
       stocks = data || [];
 
-      // 2️⃣ Extract symbols
-      symbols = stocks.map((s) => s.stock_name);
+      const symbols = stocks.map((s) => s.stock_name);
 
-      // 3️⃣ Fetch quotes if symbols exist
+      // 2️⃣ Fetch live quotes if symbols exist
       if (symbols.length > 0) {
         const quotesRes = await fetch(
           `${process.env.NEXT_PUBLIC_URL}/api/quotes`,
@@ -61,29 +75,41 @@ export default async function RootLayout({
 
         if (quotesRes.ok) {
           const { data: quotesData } = await quotesRes.json();
-
-          // map symbols → quote
           const quoteMap: Record<string, any> = {};
+
           quotesData.forEach((q: any) => {
             if (q.symbol && q.quote) quoteMap[q.symbol.toUpperCase()] = q.quote;
           });
 
-          // 4️⃣ Attach quotes
-          stocks = stocks.map((stock) => ({
-            ...stock,
-            quote: quoteMap[stock.stock_name] || null,
-          }));
+          // 3️⃣ Attach quote, live price, and convert to INR
+          stocks = await Promise.all(
+            stocks.map(async (stock) => {
+              const live = quoteMap[stock.stock_name.toUpperCase()] || null;
+              const livePrice = live?.regularMarketPrice ?? 0;
+              const currency = live?.currency || "INR";
+
+              const liveINR = await convertToINR(livePrice, currency);
+
+              return {
+                ...stock,
+                quote: live,
+                live_price: livePrice, // raw live price
+                liveINR, // live price in INR
+              };
+            })
+          );
+        } else {
+          console.error("Quotes API failed:", await quotesRes.text());
         }
       }
 
-      // 5️⃣ Calculate invested & current value
+      // 4️⃣ Calculate invested and current value
       stocks.forEach((stock) => {
         const qty = Number(stock.quantity) || 0;
         const buyPrice = Number(stock.stock_price) || 0;
+        const livePrice = Number(stock.liveINR) || 0;
 
         investedValue += qty * buyPrice;
-
-        const livePrice = stock.quote?.regularMarketPrice || 0;
         currentValue += qty * livePrice;
       });
     } catch (err) {
