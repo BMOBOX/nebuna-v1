@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getSession, SessionProvider, useSession } from "next-auth/react";
 import "@/app/globals.css";
 import { Structure } from "./structure";
 import { getServerSession } from "next-auth";
@@ -51,15 +50,18 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const { data: session, status } = useSession();
-  if (status === "unauthenticated") {
-    redirect("/signin");
-  }
-  if (status === "loading") return null;
+}) {
+  // ✅ Server-side session check
+  const session = await getServerSession(authOptions);
 
+  // Redirect if not authenticated
+  if (!session?.user) {
+    redirect("/signin"); // works in server components
+  }
+
+  // Fetch transactions
   const transaction = await gettransaction();
 
   return <Structure transaction={transaction}>{children}</Structure>;
