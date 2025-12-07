@@ -105,6 +105,7 @@ function Search() {
                     href={`/stocks/${item.symbol}`}
                     onMouseDown={(e) => {
                       e.preventDefault();
+                      hide();
                       handleLinkClick(item.symbol);
                     }}
                     className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md transition"
