@@ -233,6 +233,7 @@ export function Structure({
     setOwned(0);
     setProfitLoss(0);
     try {
+      console.log(priceu, inrPrice);
       // Sell all shares
       const resp = await close(
         data.symbol,

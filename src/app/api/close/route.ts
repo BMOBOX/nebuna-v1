@@ -61,6 +61,8 @@ export async function POST(req: Request) {
       newWallet += openPrice * qty; // buy-to-cover proceeds
     }
 
+    newWallet = newWallet + PL;
+
     // 2️⃣ Update wallet
     const { error: walletError } = await supabase
       .from("users")
