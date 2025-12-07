@@ -1,7 +1,7 @@
 // app/signin/SigninClient.tsx
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -12,51 +12,61 @@ import Header from "@/components/Header";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-// Handles ?error= queries and shows toast + cleans URL
+/* -------------------------------------------------------
+   SAFE ERROR HANDLER — runs ONLY after hydration
+-------------------------------------------------------- */
 function SearchParamsHandler() {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const error = searchParams.get("error");
+    setMounted(true); // ensures hydration finished
+  }, []);
 
+  useEffect(() => {
+    if (!mounted) return; // DO NOT run during hydration!
+
+    const error = searchParams.get("error");
     if (!error) return;
 
+    // Show correct toast
     if (error === "duplicate_email") {
       toast.error("An account with this email already exists. Please sign in.");
     } else if (
       error === "OAuthSignin" ||
       error === "OAuthCallback" ||
-      error === "OAuthAccountNotLinked" ||
-      error === "Callback"
+      error === "OAuthAccountNotLinked"
     ) {
       toast.error("Failed to sign in with Google. Please try again.");
     } else {
       toast.error("Sign in failed. Please try again.");
     }
 
-    // Clean the URL without page reload
-    router.replace("/signin", { scroll: false });
-  }, [searchParams, router]);
+    // Clean URL (no refresh, no crash)
+    router.replace("/signin");
+  }, [mounted, searchParams, router]);
 
   return null;
 }
 
-// Your main sign-in form
+/* -------------------------------------------------------
+   MAIN SIGN IN FORM
+-------------------------------------------------------- */
 function SigninContent() {
   const { status } = useSession();
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If already logged in → redirect to dashboard
+  // Auto-redirect if already logged in
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/dashboard");
     }
   }, [status, router]);
 
-  // Don't render form if loading or authenticated
   if (status === "loading") return null;
   if (status === "authenticated") return null;
 
@@ -78,11 +88,11 @@ function SigninContent() {
       });
 
       if (res?.error) {
-        const message =
+        toast.error(
           res.error === "CredentialsSignin"
             ? "Wrong email or password!"
-            : "Sign in failed. Please try again.";
-        toast.error(message);
+            : "Sign in failed. Please try again."
+        );
         setIsSubmitting(false);
         return;
       }
@@ -98,11 +108,12 @@ function SigninContent() {
 
       <div className="flex min-h-screen items-center justify-center bg-black px-4">
         <div className="w-full max-w-md rounded-xl bg-[#141414] p-8 shadow-lg">
-          <h2 className="mb-2 text-center text-2xl font-bold text-white">
+          <h2 className="text-center text-2xl font-bold mb-2 text-white">
             Sign in
           </h2>
-          <p className="mb-6 text-center text-gray-500">Welcome back!</p>
+          <p className="text-center mb-6 text-gray-500">Welcome back!</p>
 
+          {/* Form */}
           <form onSubmit={formik.handleSubmit} className="space-y-5">
             <input
               type="email"
@@ -117,6 +128,7 @@ function SigninContent() {
               onBlur={formik.handleBlur}
               value={formik.values.email}
             />
+
             {formik.touched.email && formik.errors.email && (
               <p className="text-sm text-red-500">{formik.errors.email}</p>
             )}
@@ -143,6 +155,7 @@ function SigninContent() {
                 {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
               </button>
             </div>
+
             {formik.touched.password && formik.errors.password && (
               <p className="text-sm text-red-500">{formik.errors.password}</p>
             )}
@@ -169,14 +182,20 @@ function SigninContent() {
             </button>
           </form>
 
-          <div className="my-6 flex items-center">
+          {/* Divider */}
+          <div className="flex items-center my-6">
             <hr className="grow border-gray-600" />
             <span className="mx-3 text-sm text-gray-400">or</span>
             <hr className="grow border-gray-600" />
           </div>
 
+          {/* Google */}
           <button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() =>
+              signIn("google", {
+                callbackUrl: "/dashboard",
+              })
+            }
             className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-600 bg-transparent py-3 text-white transition hover:bg-gray-800"
           >
             <FcGoogle size={22} />
@@ -195,13 +214,13 @@ function SigninContent() {
   );
 }
 
-// Main exported component
+/* -------------------------------------------------------
+   EXPORT: Handler + Content (no Suspense)
+-------------------------------------------------------- */
 export default function SigninClient() {
   return (
     <>
-      <Suspense fallback={null}>
-        <SearchParamsHandler />
-      </Suspense>
+      <SearchParamsHandler />
       <SigninContent />
     </>
   );
