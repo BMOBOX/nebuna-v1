@@ -32,15 +32,6 @@ const signupSchema = Yup.object().shape({
 export default function Signup() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("duplicate")) {
-      toast.error(
-        "Account already exists! Please sign in with your credentials."
-      );
-    }
-  }, [searchParams]);
 
   // ALL HOOKS AT THE TOP — NEVER AFTER ANY RETURN!
   const [showPassword, setShowPassword] = useState(false);
