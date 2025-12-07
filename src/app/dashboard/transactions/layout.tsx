@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getSession, SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider, useSession } from "next-auth/react";
 import "@/app/globals.css";
 import { Structure } from "./structure";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { gettransaction } from "@/services/stock";
+import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { data: session, status } = useSession();
+  if (status === "unauthenticated") {
+    redirect("/signin");
+  }
+  if (status === "loading") return null;
+
   const transaction = await gettransaction();
 
   return <Structure transaction={transaction}>{children}</Structure>;
