@@ -1,47 +1,64 @@
-// app/signin/SigninClient.tsx   (or wherever your signin page lives)
+// app/signin/SigninClient.tsx
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-// ←←← This tiny wrapper fixes everything
+// Handles ?error= queries and shows toast + cleans URL
 function SearchParamsHandler() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const error = searchParams.get("error");
 
+    if (!error) return;
+
     if (error === "duplicate_email") {
       toast.error("An account with this email already exists. Please sign in.");
-      redirect("/signin");
-    } else if (error === "OAuthSignin" || error === "OAuthCallback") {
-      toast.error("Failed to sign in with Google.");
-      redirect("/signin");
+    } else if (
+      error === "OAuthSignin" ||
+      error === "OAuthCallback" ||
+      error === "OAuthAccountNotLinked" ||
+      error === "Callback"
+    ) {
+      toast.error("Failed to sign in with Google. Please try again.");
+    } else {
+      toast.error("Sign in failed. Please try again.");
     }
-  }, [searchParams]);
+
+    // Clean the URL without page reload
+    router.replace("/signin", { scroll: false });
+  }, [searchParams, router]);
 
   return null;
 }
 
-// ←←← Your actual sign-in page (unchanged logic)
+// Your main sign-in form
 function SigninContent() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Redirect if already logged in
-  if (status === "authenticated") {
-    redirect("/dashboard");
-  }
+  // If already logged in → redirect to dashboard
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard");
+    }
+  }, [status, router]);
+
+  // Don't render form if loading or authenticated
+  if (status === "loading") return null;
+  if (status === "authenticated") return null;
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
@@ -53,6 +70,7 @@ function SigninContent() {
     }),
     onSubmit: async (values) => {
       setIsSubmitting(true);
+
       const res = await signIn("credentials", {
         redirect: false,
         email: values.email,
@@ -60,17 +78,17 @@ function SigninContent() {
       });
 
       if (res?.error) {
-        toast.error(
+        const message =
           res.error === "CredentialsSignin"
             ? "Wrong email or password!"
-            : res.error
-        );
+            : "Sign in failed. Please try again.";
+        toast.error(message);
         setIsSubmitting(false);
         return;
       }
 
       toast.success("Signed in successfully!");
-      redirect("/dashboard");
+      router.push("/dashboard");
     },
   });
 
@@ -78,18 +96,19 @@ function SigninContent() {
     <>
       <Header showLogo={false} />
 
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="bg-[#141414] text-white p-8 rounded-xl w-96 shadow-lg">
-          <h2 className="text-2xl font-bold text-center mb-2">Sign in</h2>
-          <p className="text-gray-500 text-center mb-6">Welcome back!</p>
+      <div className="flex min-h-screen items-center justify-center bg-black px-4">
+        <div className="w-full max-w-md rounded-xl bg-[#141414] p-8 shadow-lg">
+          <h2 className="mb-2 text-center text-2xl font-bold text-white">
+            Sign in
+          </h2>
+          <p className="mb-6 text-center text-gray-500">Welcome back!</p>
 
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Your entire form exactly as you had it */}
+          <form onSubmit={formik.handleSubmit} className="space-y-5">
             <input
               type="email"
               name="email"
               placeholder="Email"
-              className={`w-full p-3 bg-transparent border rounded-md focus:ring-2 focus:ring-gray-400 ${
+              className={`w-full rounded-md border bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
                 formik.touched.email && formik.errors.email
                   ? "border-red-500"
                   : "border-gray-600"
@@ -98,13 +117,16 @@ function SigninContent() {
               onBlur={formik.handleBlur}
               value={formik.values.email}
             />
+            {formik.touched.email && formik.errors.email && (
+              <p className="text-sm text-red-500">{formik.errors.email}</p>
+            )}
 
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                className={`w-full p-3 bg-transparent border rounded-md focus:ring-2 focus:ring-gray-400 ${
+                className={`w-full rounded-md border bg-transparent px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
                   formik.touched.password && formik.errors.password
                     ? "border-red-500"
                     : "border-gray-600"
@@ -116,11 +138,14 @@ function SigninContent() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-4 text-gray-400"
+                className="absolute right-3 top-3.5 text-gray-400 hover:text-white"
               >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
+                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
               </button>
             </div>
+            {formik.touched.password && formik.errors.password && (
+              <p className="text-sm text-red-500">{formik.errors.password}</p>
+            )}
 
             <div className="text-right">
               <Link
@@ -134,30 +159,31 @@ function SigninContent() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full p-3 rounded-md transition ${
+              className={`w-full rounded-md py-3 font-medium transition ${
                 isSubmitting
-                  ? "bg-zinc-800/70 cursor-not-allowed"
-                  : "bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700"
+                  ? "cursor-not-allowed bg-zinc-800/70 text-gray-400"
+                  : "bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 text-white"
               }`}
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
-          <div className="flex items-center my-4">
+          <div className="my-6 flex items-center">
             <hr className="grow border-gray-600" />
-            <span className="mx-2 text-gray-400">or</span>
+            <span className="mx-3 text-sm text-gray-400">or</span>
             <hr className="grow border-gray-600" />
           </div>
 
           <button
-            onClick={() => signIn("google")}
-            className="w-full flex items-center justify-center gap-2 p-3 border border-gray-600 rounded-md hover:bg-gray-800 transition"
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-600 bg-transparent py-3 text-white transition hover:bg-gray-800"
           >
-            <FcGoogle className="text-xl" /> Continue with Google
+            <FcGoogle size={22} />
+            Continue with Google
           </button>
 
-          <p className="text-center text-gray-400 mt-4">
+          <p className="mt-6 text-center text-sm text-gray-400">
             Don't have an account?{" "}
             <Link href="/signup" className="text-blue-500 hover:underline">
               Sign up
@@ -169,11 +195,11 @@ function SigninContent() {
   );
 }
 
-// ←←← The only thing that matters: wrap the handler in Suspense
+// Main exported component
 export default function SigninClient() {
   return (
     <>
-      <Suspense>
+      <Suspense fallback={null}>
         <SearchParamsHandler />
       </Suspense>
       <SigninContent />
