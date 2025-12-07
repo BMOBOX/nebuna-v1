@@ -38,7 +38,7 @@ export default function Signin() {
   // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/dashboard");
+      router.replace("/dashboard/portfolio");
     }
   }, [status, router]);
 
@@ -62,14 +62,14 @@ export default function Signin() {
       }
 
       toast.success("Signed in successfully!");
-      router.push("/dashboard"); // redirect first
+      router.push("/dashboard/portfolio"); // redirect first
       // do not set isSubmitting false here, component will unmount
     },
   });
   const handleGoogleSignIn = async () => {
     const result = await signIn("google", { redirect: false });
     if (result?.ok) {
-      router.push("/dashboard");
+      router.push("/dashboard/portfolio");
     }
   };
 
