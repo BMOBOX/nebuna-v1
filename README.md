@@ -8,7 +8,7 @@ Nebuna is a modern **paper trading platform** that lets you simulate stock tradi
 
 ## Features
 
-- 📈 **Real-time quotes**: Live market prices updated every 2 seconds.
+- 📈 **Real-time quotes**: Live market prices updates.
 - 💹 **Portfolio tracking**: See invested value, current value, and overall P&L.
 - 🌐 **Currency conversion**: All prices are shown in INR, even for foreign stocks.
 - 🖥️ **Responsive UI**: Clean and intuitive interface for desktop and mobile.
