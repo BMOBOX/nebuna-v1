@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
-function Page() {
+export default function Page() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
