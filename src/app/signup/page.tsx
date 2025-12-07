@@ -1,5 +1,7 @@
 // app/signup/page.tsx ← JUST REPLACE YOUR FILE WITH THIS
 
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
