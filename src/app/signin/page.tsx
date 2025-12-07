@@ -68,10 +68,7 @@ export default function Signin() {
   });
   const handleGoogleSignIn = async () => {
     const result = await signIn("google", { redirect: false });
-    console.log(result);
-    if (!result) {
-      router.push("/signin");
-    } else if (result?.ok) {
+    if (result?.ok) {
       router.push("/dashboard");
     }
   };
