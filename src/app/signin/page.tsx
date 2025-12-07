@@ -67,7 +67,7 @@ export default function Signin() {
     },
   });
   const handleGoogleSignIn = async () => {
-    const result = await signIn("google");
+    const result = await signIn("google", { redirect: false });
     console.log(result);
     if (!result) {
       toast.error("Google sign-in failed!");
