@@ -12,9 +12,5 @@ export default function Page() {
   }, [status]);
 
   if (status === "loading") return null;
-  return (
-    <div className="shadcn-theme dark min-h-screen">
-      <h1 className="text-3xl font-bold tracking-tight mb-6">Portfolio</h1>
-    </div>
-  );
+  return <div className="shadcn-theme dark min-h-screen"></div>;
 }

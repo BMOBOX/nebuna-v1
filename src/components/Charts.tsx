@@ -118,7 +118,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: "#1d232a" },
+        background: { type: ColorType.Solid, color: "#18181b" },
         textColor: "#d1d5db",
       },
       grid: {
@@ -197,7 +197,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
     <div className="w-full h-full relative">
       <div
         ref={chartContainerRef}
-        className="w-full h-full bg-[#161a1f] rounded-lg shadow-lg"
+        className="w-full h-full bg-zinc-900 rounded-lg shadow-lg"
       />
 
       {data.length === 0 && (
@@ -208,7 +208,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
 
       {hoveredCandle.high !== null && hoveredCandle.low !== null && (
         <div
-          className="absolute bg-gray-900/95 text-white text-xs rounded px-3 py-2 pointer-events-none z-50 border border-gray-700 shadow-xl"
+          className="absolute bg-zinc-900/95 text-white text-xs rounded px-3 py-2 pointer-events-none z-50 border border-zinc-800 shadow-xl"
           style={{
             left: cursorPos.x + 15,
             top: cursorPos.y + 15,

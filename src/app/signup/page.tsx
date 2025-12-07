@@ -202,7 +202,11 @@ export default function Signup() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-white py-3.5 font-semibold text-black transition hover:bg-gray-100 disabled:opacity-70"
+            className={`w-full p-3 rounded-md transition cursor-pointer ${
+              isSubmitting
+                ? "bg-zinc-800/70 border-700 cursor-not-allowed"
+                : "bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700"
+            }`}
           >
             {isSubmitting ? "Creating account..." : "Sign up"}
           </button>
