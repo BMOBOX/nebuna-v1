@@ -22,10 +22,12 @@ export async function POST(req: Request) {
           const quote = await yf.quote(symbol);
           return { symbol, quote };
         } catch (err) {
-          return { symbol, error: "Failed to fetch" };
+          return { symbol, error: err };
         }
       })
     );
+
+    console.log("Multi quote API results:", results);
 
     return NextResponse.json({ data: results });
   } catch (error) {
