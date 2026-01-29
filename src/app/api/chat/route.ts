@@ -13,11 +13,11 @@ You help users with:
 3. Market insights and explanations
 4. Risk management advice
 
-IMPORTANT: You only have access to the portfolio data provided above. Work only with the information provided do not create your own data for user. If you require current stock price search for it
+IMPORTANT: You only have access to the portfolio data provided above. Work only with the information provided do not create your own data for user. Never ask for current price to user
 
 Guidelines:
 - Be concise but informative
-- If you need current stock price for analyzing users portfolio search for the current price
+- Response should be detailed
 - Use ₹ for Indian Rupees
 - Provide actionable insights
 - Always clarify you're providing educational info, not financial advice
@@ -117,11 +117,53 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Extract stock symbols from message and fetch current prices
+    let stockPricesContext = "";
+    const stockSymbolRegex = /\b([A-Z]{2,5})\b/g;
+    const stockSymbols = message.match(stockSymbolRegex);
+
+    if (stockSymbols && stockSymbols.length > 0) {
+      const uniqueSymbols = [...new Set(stockSymbols)];
+      const stockPrices: Record<string, number> = {};
+
+      for (const symbol of uniqueSymbols) {
+        try {
+          const priceRes = await fetch(
+            `${
+              process.env.NEXTAUTH_URL || "http://localhost:3000"
+            }/api/stock-price/${symbol}/current`,
+            {
+              headers: {
+                cookie: req.headers.get("cookie") || "",
+              },
+            }
+          );
+
+          if (priceRes.ok) {
+            const priceData = await priceRes.json();
+            if (priceData.regularMarketPrice) {
+              stockPrices[symbol] = priceData.regularMarketPrice;
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching price for ${symbol}:`, error);
+        }
+      }
+
+      if (Object.keys(stockPrices).length > 0) {
+        stockPricesContext = `\n\nCurrent Stock Prices:\n${JSON.stringify(
+          stockPrices,
+          null,
+          2
+        )}`;
+      }
+    }
+
     // Generate AI response
     const aiResponse = await generateResponseWithSystem(
       message,
       SYSTEM_PROMPT,
-      contextString
+      contextString + stockPricesContext
     );
 
     // Save AI response to chat history

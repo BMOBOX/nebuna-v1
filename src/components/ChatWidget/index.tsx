@@ -66,9 +66,9 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-6rem)] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col z-50 border border-zinc-200 dark:border-zinc-800">
+    <div className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-6rem)] bg-zinc-900 dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col z-50 border border-zinc-800 dark:border-zinc-800">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 dark:border-zinc-800">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-blue-600" />
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
@@ -99,12 +99,10 @@ export function ChatWidget() {
           <div className="flex flex-col items-center justify-center h-full text-center">
             <MessageSquare className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" />
             <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-              Hi! I'm your trading assistant. Ask me anything about your portfolio or trading strategies.
+              Hi! I'm your trading assistant. Ask me anything about your
+              portfolio or trading strategies.
             </p>
-            <QuickActions
-              actions={quickActions}
-              onActionClick={sendMessage}
-            />
+            <QuickActions actions={quickActions} onActionClick={sendMessage} />
           </div>
         ) : (
           <>
@@ -128,7 +126,7 @@ export function ChatWidget() {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="p-4 border-t border-zinc-800 dark:border-zinc-800">
         <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
       </div>
     </div>
