@@ -2,7 +2,20 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Session } from "next-auth";
-import { Search, UserPlus, Check, X, Trophy, Users, Crown, TrendingUp, UserCheck, UserX, Clock, Medal } from "lucide-react";
+import {
+  Search,
+  UserPlus,
+  Check,
+  X,
+  Trophy,
+  Users,
+  TrendingUp,
+  UserCheck,
+  UserX,
+  Clock,
+  Medal,
+  Crown,
+} from "lucide-react";
 import { toast } from "react-toastify";
 
 interface User {
@@ -54,7 +67,10 @@ export function Structure({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowResults(false);
       }
     };
@@ -113,7 +129,7 @@ export function Structure({
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
-    
+
     if (query.trim().length < 2) {
       setSearchResults([]);
       setShowResults(false);
@@ -122,10 +138,12 @@ export function Structure({
 
     setIsSearching(true);
     try {
-      const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(
+        `/api/users/search?q=${encodeURIComponent(query)}`
+      );
       if (res.ok) {
         const data = await res.json();
-        
+
         const filteredResults = (data.users || [])
           .filter((u: User) => u.id !== user?.user_id)
           .map((u: User) => ({
@@ -134,7 +152,7 @@ export function Structure({
             isPending: pendingRequests.some((pr) => pr.sender_id === u.id),
             hasSentRequest: sentRequests.some((sr) => sr.receiver_id === u.id),
           }));
-        
+
         setSearchResults(filteredResults);
         setShowResults(true);
       }
@@ -275,34 +293,26 @@ export function Structure({
     return user.user_name || user.email.split("@")[0];
   };
 
-  const getRankStyle = (rank: number) => {
-    if (rank === 1) return "bg-gradient-to-r from-yellow-400/20 to-amber-500/20 border-yellow-400/30";
-    if (rank === 2) return "bg-gradient-to-r from-gray-300/20 to-gray-400/20 border-gray-300/30";
-    if (rank === 3) return "bg-gradient-to-r from-amber-600/20 to-orange-600/20 border-amber-600/30";
-    return "hover:bg-zinc-800/50";
-  };
-
-  const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Crown className="w-5 h-5 text-yellow-400" />;
-    if (rank === 2) return <Medal className="w-5 h-5 text-gray-300" />;
-    if (rank === 3) return <Medal className="w-5 h-5 text-amber-600" />;
-    return <span className="text-zinc-500 font-semibold text-sm w-5 text-center">{rank}</span>;
-  };
-
   const totalPending = pendingRequests.length + sentRequests.length;
 
-  const friendsLeaderboard = [...friends].sort((a, b) => (b.wallet || 0) - (a.wallet || 0));
+  const friendsLeaderboard = [...friends].sort(
+    (a, b) => (b.wallet || 0) - (a.wallet || 0)
+  );
 
   return (
-    <div className="shadcn dark min-h-screen bg-black">
+    <div className="shadcn dark min-h-scree">
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Leaderboard</h1>
-            <p className="text-zinc-400 text-sm mt-1">Top traders by wallet balance</p>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              Leaderboard
+            </h1>
+            <p className="text-zinc-500 text-sm mt-1">
+              Top traders by wallet balance
+            </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Search */}
             <div ref={searchRef} className="relative">
@@ -314,7 +324,9 @@ export function Structure({
                   className="bg-transparent outline-none text-white w-full placeholder-zinc-500 text-sm"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  onFocus={() => searchQuery.trim().length >= 2 && setShowResults(true)}
+                  onFocus={() =>
+                    searchQuery.trim().length >= 2 && setShowResults(true)
+                  }
                 />
               </div>
 
@@ -330,21 +342,25 @@ export function Structure({
                           {getDisplayName(result).charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-white text-sm">{getDisplayName(result)}</p>
-                          <p className="text-xs text-zinc-500">{result.email}</p>
+                          <p className="font-medium text-white text-sm">
+                            {getDisplayName(result)}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {result.email}
+                          </p>
                         </div>
                       </div>
                       <div>
                         {result.isFriend ? (
-                          <span className="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">
+                          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded-full">
                             Friends
                           </span>
                         ) : result.isPending ? (
-                          <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-1 rounded-full">
+                          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded-full">
                             Pending
                           </span>
                         ) : result.hasSentRequest ? (
-                          <span className="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded-full">
+                          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded-full">
                             Sent
                           </span>
                         ) : (
@@ -376,7 +392,7 @@ export function Structure({
               <Users className="w-4 h-4" />
               <span className="text-sm">Friends</span>
               {totalPending > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-black text-xs rounded-full flex items-center justify-center font-medium">
                   {totalPending}
                 </span>
               )}
@@ -417,40 +433,54 @@ export function Structure({
               const rank = index + 1;
               const isCurrentUser = leaderUser.id === user?.user_id;
               const isFriend = friends.some((f) => f.id === leaderUser.id);
-              
+
               return (
                 <div
                   key={leaderUser.id}
-                  className={`flex items-center justify-between p-4 rounded-2xl border border-zinc-800/50 transition ${getRankStyle(rank)} ${
-                    isCurrentUser ? "bg-blue-500/5 border-blue-500/20" : ""
+                  className={`flex items-center justify-between p-4 rounded-xl border border-zinc-800/50 transition hover:bg-zinc-900/50 ${
+                    isCurrentUser ? "bg-zinc-900" : ""
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex items-center justify-center w-8">
-                      {getRankIcon(rank)}
+                      {rank === 1 ? (
+                        <Crown className="w-5 h-5 text-yellow-400" />
+                      ) : rank === 2 ? (
+                        <Medal className="w-5 h-5 text-gray-300" />
+                      ) : rank === 3 ? (
+                        <Medal className="w-5 h-5 text-amber-600" />
+                      ) : (
+                        <span className="text-zinc-500 font-medium text-sm">
+                          {rank}
+                        </span>
+                      )}
                     </div>
                     <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-white font-medium text-sm">
                       {getDisplayName(leaderUser).charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-white">{getDisplayName(leaderUser)}</p>
+                        <p className="font-medium text-white">
+                          {getDisplayName(leaderUser)}
+                        </p>
                         {isCurrentUser && (
-                          <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">
+                          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-full">
                             You
                           </span>
                         )}
                         {isFriend && !isCurrentUser && (
-                          <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+                          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-full">
                             Friend
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-500">{leaderUser.email}</p>
+                      <p className="text-xs text-zinc-500">
+                        {leaderUser.email}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <p className="font-semibold text-emerald-400">
+                    <p className="font-medium text-green-500">
                       ₹{leaderUser.wallet?.toLocaleString() || 0}
                     </p>
                     {!isCurrentUser && !isFriend && (
@@ -477,27 +507,39 @@ export function Structure({
                 return (
                   <div
                     key={friend.id}
-                    className={`flex items-center justify-between p-4 rounded-2xl border border-zinc-800/50 transition ${getRankStyle(rank)}`}
+                    className="flex items-center justify-between p-4 rounded-xl border border-zinc-800/50 transition hover:bg-zinc-900/50"
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex items-center justify-center w-8">
-                        {getRankIcon(rank)}
+                        {rank === 1 ? (
+                          <Crown className="w-5 h-5 text-yellow-400" />
+                        ) : rank === 2 ? (
+                          <Medal className="w-5 h-5 text-gray-300" />
+                        ) : rank === 3 ? (
+                          <Medal className="w-5 h-5 text-amber-600" />
+                        ) : (
+                          <span className="text-zinc-500 font-medium text-sm">
+                            {rank}
+                          </span>
+                        )}
                       </div>
                       <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-white font-medium text-sm">
                         {getDisplayName(friend).charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{getDisplayName(friend)}</p>
+                        <p className="font-medium text-white">
+                          {getDisplayName(friend)}
+                        </p>
                         <p className="text-xs text-zinc-500">{friend.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="font-semibold text-emerald-400">
+                      <p className="font-medium text-green-500">
                         ₹{friend.wallet?.toLocaleString() || 0}
                       </p>
                       <button
                         onClick={() => removeFriend(friend.id)}
-                        className="p-2 bg-zinc-800 hover:bg-red-500/20 hover:text-red-400 text-zinc-400 rounded-full transition"
+                        className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-full transition"
                       >
                         <UserX className="w-4 h-4" />
                       </button>
@@ -508,8 +550,12 @@ export function Structure({
             ) : (
               <div className="text-center py-16">
                 <Users className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">No Friends Yet</h3>
-                <p className="text-zinc-500 mb-6">Add friends to see them on your leaderboard</p>
+                <h3 className="text-lg font-medium text-white mb-2">
+                  No Friends Yet
+                </h3>
+                <p className="text-zinc-500 mb-6">
+                  Add friends to see them on your leaderboard
+                </p>
                 <button
                   onClick={() => setActiveTab("global")}
                   className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-full transition border border-zinc-800"
@@ -534,12 +580,12 @@ export function Structure({
                   <X className="w-5 h-5 text-zinc-400" />
                 </button>
               </div>
-              
+
               <div className="p-6 overflow-y-auto max-h-[60vh] space-y-6">
                 {/* Incoming */}
                 {pendingRequests.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
+                    <h3 className="text-sm font-medium text-zinc-500 mb-3 uppercase tracking-wider">
                       Incoming ({pendingRequests.length})
                     </h3>
                     <div className="space-y-2">
@@ -551,26 +597,33 @@ export function Structure({
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-white font-medium text-sm">
                               {request.sender?.user_name
-                                ? request.sender.user_name.charAt(0).toUpperCase()
-                                : request.sender?.email?.charAt(0).toUpperCase() || "?"}
+                                ? request.sender.user_name
+                                    .charAt(0)
+                                    .toUpperCase()
+                                : request.sender?.email
+                                    ?.charAt(0)
+                                    .toUpperCase() || "?"}
                             </div>
                             <div>
                               <p className="font-medium text-white text-sm">
-                                {request.sender?.user_name || request.sender?.email?.split("@")[0]}
+                                {request.sender?.user_name ||
+                                  request.sender?.email?.split("@")[0]}
                               </p>
-                              <p className="text-xs text-zinc-500">{request.sender?.email}</p>
+                              <p className="text-xs text-zinc-500">
+                                {request.sender?.email}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => acceptFriendRequest(request.id)}
-                              className="p-2 bg-emerald-500/20 text-emerald-400 rounded-full hover:bg-emerald-500/30 transition"
+                              className="p-2 bg-zinc-800 text-green-500 rounded-full hover:bg-zinc-700 transition"
                             >
                               <Check className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => rejectFriendRequest(request.id)}
-                              className="p-2 bg-zinc-800 text-zinc-400 rounded-full hover:bg-red-500/20 hover:text-red-400 transition"
+                              className="p-2 bg-zinc-800 text-zinc-400 rounded-full hover:bg-zinc-700 transition"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -584,7 +637,7 @@ export function Structure({
                 {/* Sent */}
                 {sentRequests.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
+                    <h3 className="text-sm font-medium text-zinc-500 mb-3 uppercase tracking-wider">
                       Sent ({sentRequests.length})
                     </h3>
                     <div className="space-y-2">
@@ -596,19 +649,26 @@ export function Structure({
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-white font-medium text-sm">
                               {request.receiver?.user_name
-                                ? request.receiver.user_name.charAt(0).toUpperCase()
-                                : request.receiver?.email?.charAt(0).toUpperCase() || "?"}
+                                ? request.receiver.user_name
+                                    .charAt(0)
+                                    .toUpperCase()
+                                : request.receiver?.email
+                                    ?.charAt(0)
+                                    .toUpperCase() || "?"}
                             </div>
                             <div>
                               <p className="font-medium text-white text-sm">
-                                {request.receiver?.user_name || request.receiver?.email?.split("@")[0]}
+                                {request.receiver?.user_name ||
+                                  request.receiver?.email?.split("@")[0]}
                               </p>
-                              <p className="text-xs text-zinc-500">{request.receiver?.email}</p>
+                              <p className="text-xs text-zinc-500">
+                                {request.receiver?.email}
+                              </p>
                             </div>
                           </div>
                           <button
                             onClick={() => cancelSentRequest(request.id)}
-                            className="text-xs text-zinc-400 hover:text-red-400 transition"
+                            className="text-xs text-zinc-400 hover:text-white transition"
                           >
                             Cancel
                           </button>
@@ -621,7 +681,7 @@ export function Structure({
                 {/* All Friends */}
                 {friends.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
+                    <h3 className="text-sm font-medium text-zinc-500 mb-3 uppercase tracking-wider">
                       All Friends ({friends.length})
                     </h3>
                     <div className="space-y-2">
@@ -635,17 +695,21 @@ export function Structure({
                               {getDisplayName(friend).charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="font-medium text-white text-sm">{getDisplayName(friend)}</p>
-                              <p className="text-xs text-zinc-500">{friend.email}</p>
+                              <p className="font-medium text-white text-sm">
+                                {getDisplayName(friend)}
+                              </p>
+                              <p className="text-xs text-zinc-500">
+                                {friend.email}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-sm text-emerald-400">
+                            <span className="text-sm text-green-500">
                               ₹{friend.wallet?.toLocaleString() || 0}
                             </span>
                             <button
                               onClick={() => removeFriend(friend.id)}
-                              className="p-2 hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-full transition"
+                              className="p-2 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-full transition"
                             >
                               <UserX className="w-4 h-4" />
                             </button>
