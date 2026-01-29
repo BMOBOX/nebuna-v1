@@ -10,11 +10,8 @@ export interface PortfolioContext {
   holdings: Array<{
     symbol: string;
     quantity: number;
-    avg_price: number;
-    current_price: number;
+    buy_price: number;
     total_value: number;
-    unrealized_pnl: number;
-    unrealized_pnl_percent: number;
   }>;
   transactions: Array<{
     id: string;
@@ -27,8 +24,6 @@ export interface PortfolioContext {
   }>;
   total_invested: number;
   total_value: number;
-  total_pnl: number;
-  total_pnl_percent: number;
 }
 
 export interface ChatResponse {

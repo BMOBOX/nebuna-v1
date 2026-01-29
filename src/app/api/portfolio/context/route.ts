@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
+    if (!session?.user?.user_id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -25,15 +25,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get user's holdings
-    const { data: holdings, error: holdingsError } = await supabase
+    // Get user's stocks (using stocks table)
+    const { data: stocks, error: stocksError } = await supabase
       .from("stocks")
       .select("*")
       .eq("user_id", userId);
 
-    if (holdingsError) {
+    if (stocksError) {
       return NextResponse.json(
-        { error: "Failed to fetch holdings" },
+        { error: "Failed to fetch stocks" },
         { status: 500 }
       );
     }
@@ -56,31 +56,21 @@ export async function GET(req: NextRequest) {
     // Calculate portfolio metrics
     let totalInvested = 0;
     let totalValue = 0;
-    let totalPnL = 0;
 
-    const holdingsWithMetrics = (holdings || []).map((holding) => {
-      const invested = holding.quantity * holding.avg_price;
-      const currentValue = holding.quantity * holding.current_price;
-      const pnl = currentValue - invested;
-      const pnlPercent = invested > 0 ? (pnl / invested) * 100 : 0;
+    const holdingsWithMetrics = (stocks || []).map((stock) => {
+      const invested = stock.quantity * stock.stock_price;
+      const currentValue = stock.quantity * stock.stock_price;
 
       totalInvested += invested;
       totalValue += currentValue;
-      totalPnL += pnl;
 
       return {
-        symbol: holding.stock_name,
-        quantity: holding.quantity,
-        avg_price: holding.stock_price,
-        current_price: holding.current_price,
+        symbol: stock.stock_name,
+        quantity: stock.quantity,
+        buy_price: stock.stock_price,
         total_value: currentValue,
-        unrealized_pnl: pnl,
-        unrealized_pnl_percent: pnlPercent,
       };
     });
-
-    const totalPnLPercent =
-      totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0;
 
     // Build portfolio context
     const context: PortfolioContext = {
@@ -88,17 +78,15 @@ export async function GET(req: NextRequest) {
       holdings: holdingsWithMetrics,
       transactions: (transactions || []).map((tx) => ({
         id: tx.id,
-        symbol: tx.symbol,
+        symbol: tx.stock_name,
         type: tx.type,
         quantity: tx.quantity,
-        price: tx.price,
-        total: tx.total,
+        price: tx.stock_price,
+        total: tx.quantity * tx.stock_price,
         created_at: tx.created_at,
       })),
       total_invested: totalInvested,
       total_value: totalValue,
-      total_pnl: totalPnL,
-      total_pnl_percent: totalPnLPercent,
     };
 
     return NextResponse.json(context);
