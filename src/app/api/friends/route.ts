@@ -25,7 +25,8 @@ export async function GET(req: Request) {
           sender:sender_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -54,7 +55,8 @@ export async function GET(req: Request) {
           receiver:receiver_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -84,7 +86,8 @@ export async function GET(req: Request) {
           receiver:receiver_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -108,7 +111,8 @@ export async function GET(req: Request) {
           sender:sender_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -129,6 +133,7 @@ export async function GET(req: Request) {
           id: req.receiver.id,
           email: req.receiver.email,
           user_name: req.receiver.user_name,
+          wallet: req.receiver.wallet,
           friendship_id: req.id,
           added_at: req.created_at,
         })),
@@ -136,6 +141,7 @@ export async function GET(req: Request) {
           id: req.sender.id,
           email: req.sender.email,
           user_name: req.sender.user_name,
+          wallet: req.sender.wallet,
           friendship_id: req.id,
           added_at: req.created_at,
         })),
@@ -154,7 +160,8 @@ export async function GET(req: Request) {
           sender:sender_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -170,7 +177,8 @@ export async function GET(req: Request) {
           receiver:receiver_id (
             id,
             email,
-            user_name
+            user_name,
+            wallet
           )
         `
         )
@@ -187,7 +195,8 @@ export async function GET(req: Request) {
         sender:sender_id (
           id,
           email,
-          user_name
+          user_name,
+          wallet
         )
       `
         )
@@ -199,6 +208,7 @@ export async function GET(req: Request) {
         id: req.receiver.id,
         email: req.receiver.email,
         user_name: req.receiver.user_name,
+        wallet: req.receiver.wallet,
         friendship_id: req.id,
         added_at: req.created_at,
       })),
@@ -206,6 +216,7 @@ export async function GET(req: Request) {
         id: req.sender.id,
         email: req.sender.email,
         user_name: req.sender.user_name,
+        wallet: req.sender.wallet,
         friendship_id: req.id,
         added_at: req.created_at,
       })),
