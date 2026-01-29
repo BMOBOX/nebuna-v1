@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import yahooFinance from "yahoo-finance2";
+import {
+  fetchTwelveData,
+  mapTwelveQuote,
+  normalizeQuotePayload,
+} from "@/lib/twelvedata";
 
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ stock: string }> }
 ) {
   const { stock } = await context.params;
-  const yf = new yahooFinance();
 
   try {
-    const quote = await yf.quote(stock);
-    if (!quote) throw new Error("No data found");
-    return NextResponse.json(quote);
+    const { data, error } = await fetchTwelveData<any>("quote", {
+      symbol: String(stock).trim().toUpperCase(),
+    });
+
+    const raw = normalizeQuotePayload(data)?.[0] ?? null;
+    if (!raw) throw new Error(error || "No data found");
+
+    const quote = mapTwelveQuote(raw);
+    return NextResponse.json({ regularMarketPrice: quote.regularMarketPrice });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json(

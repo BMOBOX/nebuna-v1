@@ -256,13 +256,19 @@ export function Structure({
     }
   }
 
-  const formatPrice = (value: number, currency: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
+  const formatPrice = (value: number | null, currency: string | null) => {
+    if (!Number.isFinite(value)) return "N/A";
+    const safeCurrency = currency && currency !== "" ? currency : "USD";
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: safeCurrency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value as number);
+    } catch (error) {
+      return "N/A";
+    }
   };
 
   return (

@@ -17,6 +17,7 @@ function Sidebar({ user }: { user?: Session["user"] }) {
       href: "dashboard/transactions",
     },
     { name: "Watchlist", icon: <FaStar />, href: "dashboard/watchlist" },
+    { name: "Leaderboard", icon: <FaStar />, href: "dashboard/leaderboard" },
   ];
 
   return (

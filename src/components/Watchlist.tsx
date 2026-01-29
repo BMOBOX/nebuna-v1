@@ -54,9 +54,9 @@ export default function WatchlistTable({
         prev.map((item) => ({
           ...item,
           quote: map[item.symbol] || item.quote,
-        }))
+        })),
       );
-    }, 2000);
+    }, 20000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -86,7 +86,7 @@ export default function WatchlistTable({
         updated.map((item: any) => ({
           ...item,
           quote: map[item.symbol],
-        }))
+        })),
       );
     } catch (err) {
       console.error("Remove failed:", err);
@@ -155,8 +155,8 @@ export default function WatchlistTable({
                         percent > 0
                           ? "text-green-600"
                           : percent < 0
-                          ? "text-red-600"
-                          : "text-muted-foreground"
+                            ? "text-red-600"
+                            : "text-muted-foreground"
                       }`}
                     >
                       {percent > 0 ? "+" : ""}

@@ -19,7 +19,7 @@ async function convertToINR(amount: number, currency: string) {
 
   try {
     const res = await fetch(
-      `https://api.exchangerate-api.com/v4/latest/${currency}`
+      `https://api.exchangerate-api.com/v4/latest/${currency}`,
     );
     const data = await res.json();
     const rate = data.rates["INR"];
@@ -34,6 +34,7 @@ export default function PortfolioTable({ stocks = [] }: { stocks?: any[] }) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // ========== FETCH LIVE QUOTES ==========
+
   const fetchQuotes = async (symbols: string[]) => {
     try {
       const res = await fetch("/api/quotes", {
@@ -68,9 +69,9 @@ export default function PortfolioTable({ stocks = [] }: { stocks?: any[] }) {
         prev.map((item) => ({
           ...item,
           quote: map[item.stock_name] || item.quote,
-        }))
+        })),
       );
-    }, 2000);
+    }, 20000);
 
     return () => clearInterval(intervalRef.current as NodeJS.Timeout);
   }, [items]);
@@ -87,7 +88,7 @@ export default function PortfolioTable({ stocks = [] }: { stocks?: any[] }) {
           const liveINR = await convertToINR(price, currency);
 
           return { ...item, liveINR };
-        })
+        }),
       );
 
       setItems(updated);
@@ -189,8 +190,8 @@ export default function PortfolioTable({ stocks = [] }: { stocks?: any[] }) {
                       pnl > 0
                         ? "text-green-600"
                         : pnl < 0
-                        ? "text-red-600"
-                        : "text-gray-400"
+                          ? "text-red-600"
+                          : "text-gray-400"
                     }`}
                   >
                     {formatINR(pnl)}

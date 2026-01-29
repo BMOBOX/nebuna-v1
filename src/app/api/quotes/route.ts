@@ -1,6 +1,16 @@
 // app/api/quotes/multi/route.ts
 import { NextResponse } from "next/server";
-import yahooFinance from "yahoo-finance2";
+import {
+  fetchTwelveData,
+  mapTwelveQuote,
+  normalizeQuotePayload,
+} from "@/lib/twelvedata";
+
+const cache = new Map<
+  string,
+  { expiresAt: number; data: Array<{ symbol: string; quote?: unknown; error?: unknown }> }
+>();
+const cacheTtlMs = 15000;
 
 export async function POST(req: Request) {
   try {
@@ -13,21 +23,40 @@ export async function POST(req: Request) {
       );
     }
 
-    const yf = new yahooFinance();
+    const normalizedSymbols = symbols
+      .map((symbol) => String(symbol).trim().toUpperCase())
+      .filter(Boolean);
 
-    // Fetch all quotes in parallel
-    const results = await Promise.all(
-      symbols.map(async (symbol) => {
-        try {
-          const quote = await yf.quote(symbol);
-          return { symbol, quote };
-        } catch (err) {
-          return { symbol, error: err };
-        }
-      })
+    const cacheKey = normalizedSymbols.join(",");
+    const cached = cache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return NextResponse.json({ data: cached.data });
+    }
+
+    const { data, error } = await fetchTwelveData<any>("quote", {
+      symbol: normalizedSymbols.join(","),
+    });
+
+    const items = normalizeQuotePayload(data);
+    const mapped = new Map(
+      items.map((item: any) => [String(item.symbol || "").toUpperCase(), item])
     );
 
-    console.log("Multi quote API results:", results);
+    const results = normalizedSymbols.map((symbol) => {
+      const raw = mapped.get(symbol);
+      if (!raw) {
+        return {
+          symbol,
+          error: error || "Quote not found",
+        };
+      }
+
+      return {
+        symbol,
+        quote: mapTwelveQuote(raw),
+      };
+    });
+    cache.set(cacheKey, { expiresAt: Date.now() + cacheTtlMs, data: results });
 
     return NextResponse.json({ data: results });
   } catch (error) {

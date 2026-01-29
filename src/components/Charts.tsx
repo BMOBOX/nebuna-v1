@@ -108,7 +108,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
     };
 
     fetchData();
-    const id = setInterval(fetchData, 5000);
+    const id = setInterval(fetchData, 20000);
     return () => clearInterval(id);
   }, [stock, interval]);
 

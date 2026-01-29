@@ -86,9 +86,7 @@ export default function PnLCard({
 
   useEffect(() => {
     updatePnL(); // initial calculation
-    const interval = setInterval(updatePnL, 2000); // update every 2s
-    return () => clearInterval(interval);
-  }, [items]);
+  }, []);
 
   const pnl = currentValue - investedValue;
   const pnlPercent = investedValue > 0 ? (pnl / investedValue) * 100 : 0;

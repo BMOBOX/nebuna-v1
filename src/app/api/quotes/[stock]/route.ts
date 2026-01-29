@@ -1,25 +1,32 @@
 // app/api/quotes/[symbol]/route.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import yahooFinance from "yahoo-finance2";
+import {
+  fetchTwelveData,
+  mapTwelveQuote,
+  normalizeQuotePayload,
+} from "@/lib/twelvedata";
 
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ stock: string }> }
 ) {
   const { stock } = await context.params;
-  const yf = new yahooFinance();
   try {
-    const quote = await yf.quote(stock);
+    const { data, error, status } = await fetchTwelveData<any>("quote", {
+      symbol: String(stock).trim().toUpperCase(),
+    });
 
-    if (!quote) {
+    const raw = normalizeQuotePayload(data)?.[0] ?? null;
+
+    if (!raw) {
       return NextResponse.json(
-        { error: "Regular market price not found" },
-        { status: 404 }
+        { error: error || "Regular market price not found" },
+        { status: status || 404 }
       );
     }
 
-    return NextResponse.json(quote);
+    return NextResponse.json(mapTwelveQuote(raw));
   } catch (error) {
     console.error(error);
     return NextResponse.json(

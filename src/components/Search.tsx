@@ -92,7 +92,7 @@ function Search() {
           {com.length > 0 ? (
             com.map(
               (item: any, index) =>
-                item.shortname &&
+                (item.shortname || item.instrument_name || item.name) &&
                 ![
                   "OPTION",
                   "ETF",
@@ -111,7 +111,7 @@ function Search() {
                     className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md transition"
                     prefetch
                   >
-                    {item.shortname} ({item.symbol})
+                    {item.shortname || item.instrument_name || item.name} ({item.symbol})
                   </Link>
                 )
             )
