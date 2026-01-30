@@ -29,7 +29,7 @@ export default function Wallet({ user }: { user?: Session["user"] }) {
     fetchWallet();
 
     // Then fetch periodically
-    const interval = setInterval(fetchWallet, 2000); // every 2 seconds
+    const interval = setInterval(fetchWallet, 10000); // every 2 seconds
 
     return () => clearInterval(interval);
   }, [user?.user_id]);

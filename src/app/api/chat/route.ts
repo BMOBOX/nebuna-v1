@@ -19,11 +19,11 @@ Guidelines:
 - Be concise but informative
 - Response should be detailed
 - Use ₹ for Indian Rupees
+- If current price data is in USD convert it
 - Provide actionable insights
 - Always clarify you're providing educational info, not financial advice
 - Reference user's actual holdings when relevant
-- If asked for current stock prices, search on web for the current price
-- Keep responses under 200 words when possible`;
+- If asked for current stock prices, search on web for the current price`;
 
 // GET: Fetch chat history for user
 export async function GET(req: NextRequest) {
@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
 
 // POST: Send message to AI and get response
 export async function POST(req: NextRequest) {
+  let symbols = [];
   try {
     const session = await getServerSession(authOptions);
 
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
         if (contextRes.ok) {
           const context = await contextRes.json();
           contextString = JSON.stringify(context, null, 2);
-          console.log(context);
+          symbols = context?.holdings?.map((h: any) => String(h.symbol));
         }
       } catch (error) {
         console.error("Error fetching portfolio context:", error);
@@ -119,46 +120,30 @@ export async function POST(req: NextRequest) {
 
     // Extract stock symbols from message and fetch current prices
     let stockPricesContext = "";
-    const stockSymbolRegex = /\b([A-Z]{2,5})\b/g;
-    const stockSymbols = message.match(stockSymbolRegex);
 
-    if (stockSymbols && stockSymbols.length > 0) {
-      const uniqueSymbols = [...new Set(stockSymbols)];
-      const stockPrices: Record<string, number> = {};
-
-      for (const symbol of uniqueSymbols) {
-        try {
-          const priceRes = await fetch(
-            `${
-              process.env.NEXTAUTH_URL || "http://localhost:3000"
-            }/api/stock-price/${symbol}/current`,
-            {
-              headers: {
-                cookie: req.headers.get("cookie") || "",
-              },
-            }
-          );
-
-          if (priceRes.ok) {
-            const priceData = await priceRes.json();
-            if (priceData.regularMarketPrice) {
-              stockPrices[symbol] = priceData.regularMarketPrice;
-            }
+    if (symbols && symbols.length > 0) {
+      try {
+        const priceRes = await fetch(
+          `${process.env.NEXT_PUBLIC_URL}/api/quotes`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ symbols }),
           }
-        } catch (error) {
-          console.error(`Error fetching price for ${symbol}:`, error);
-        }
-      }
+        );
 
-      if (Object.keys(stockPrices).length > 0) {
-        stockPricesContext = `\n\nCurrent Stock Prices:\n${JSON.stringify(
-          stockPrices,
-          null,
-          2
-        )}`;
+        if (priceRes.ok) {
+          const priceData = await priceRes.json();
+          if (priceData.data.length > 0) {
+            stockPricesContext =
+              `\n\nCurrent Stock Prices (fetched automatically):\n` +
+              JSON.stringify(priceData.data);
+          }
+        }
+      } catch (error) {
+        console.error(`Error fetching price:`, error);
       }
     }
-
     // Generate AI response
     const aiResponse = await generateResponseWithSystem(
       message,

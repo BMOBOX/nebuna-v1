@@ -1,4 +1,6 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { ChatMessage } from "@/types/chat";
 
 interface ChatMessageProps {
@@ -17,7 +19,23 @@ export function ChatMessage({ message }: ChatMessageProps) {
             : "bg-zinc-800 dark:bg-zinc-800 text-zinc-200 dark:text-zinc-100"
         }`}
       >
-        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            strong: ({ children }) => (
+              <strong className="font-semibold text-white">{children}</strong>
+            ),
+            p: ({ children }) => (
+              <p className="text-sm whitespace-pre-wrap">{children}</p>
+            ),
+            ul: ({ children }) => (
+              <ul className="list-disc ml-4 space-y-1">{children}</ul>
+            ),
+            li: ({ children }) => <li>{children}</li>,
+          }}
+        >
+          {message.content}
+        </ReactMarkdown>
       </div>
     </div>
   );
