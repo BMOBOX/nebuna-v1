@@ -324,18 +324,21 @@ export function Structure({
           style={{ minHeight: "500px" }}
         >
           {/* Chart */}
-          <div className=" relative shadow-lg col-span-2 flex flex-col h-full">
-            <select
-              className="absolute top-2 left-2 z-10 bg-gray-700 text-white rounded px-3 py-1 text-sm"
-              value={interval}
-              onChange={(e) => setInterval(e.target.value)}
-            >
-              <option>1m</option>
-              <option>5m</option>
-              <option>15m</option>
-              <option>1h</option>
-              <option>1d</option>
-            </select>
+          <div className="relative shadow-lg col-span-2 flex flex-col h-full bg-zinc-900 rounded-lg overflow-hidden">
+            <div className="flex items-center justify-between p-2 bg-zinc-900 border-b border-zinc-800">
+              <select
+                className="bg-zinc-800 text-white rounded px-3 py-1.5 text-sm border border-zinc-700 hover:border-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
+                value={interval}
+                onChange={(e) => setInterval(e.target.value)}
+              >
+                <option value="1m">1 Minute</option>
+                <option value="5m">5 Minutes</option>
+                <option value="15m">15 Minutes</option>
+                <option value="1h">1 Hour</option>
+                <option value="1d">1 Day</option>
+              </select>
+              <span className="text-xs text-zinc-500">Interval</span>
+            </div>
 
             <div className="flex-1 relative w-full">
               <Chart interval={interval} />
