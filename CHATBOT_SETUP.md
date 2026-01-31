@@ -1,7 +1,7 @@
 # AI Chatbot Setup Instructions
 
 ## Overview
-The Nebuna trading app now includes an AI-powered chatbot that can analyze your portfolio and answer trading-related questions. The chatbot uses **Google Gemini AI** (100% FREE) and only accesses your existing portfolio data - no external quote API calls are made.
+The Nebuna trading app now includes an AI-powered chatbot that can analyze your portfolio and answer trading-related questions. The chatbot uses **Groq** and only accesses your existing portfolio data - no external quote API calls are made.
 
 ## Features
 - 📊 **Portfolio Analysis** - Get insights on your holdings, P&L, and performance
@@ -46,17 +46,26 @@ CREATE POLICY "Users can delete own chat history"
 **File location:** `supabase/migrations/20240129_create_chat_history.sql`
 
 ### 2. Environment Variables
-The chatbot uses your Google Gemini API key. The API key is already configured in [`src/lib/gemini.ts`](src/lib/gemini.ts:3):
+The chatbot uses your Groq API key. The API key is configured in [`src/lib/grok.ts`](src/lib/grok.ts:3):
 
 ```typescript
-const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyAxWmpr-4MUheiU5Nn7WgEPx8zmKSVg3y8";
+const API_KEY = process.env.GROQ_API_KEY || "";
 ```
 
-**Optional:** Add to your `.env` file:
+**Required:** Add to your `.env` file:
 ```env
-GEMINI_API_KEY=AIzaSyAxWmpr-4MUheiU5Nn7WgEPx8zmKSVg3y8
-GEMINI_MODEL=gemini-1.5-flash
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODEL=openai/gpt-oss-120b
 ```
+
+Get your API key from [Groq Console](https://console.groq.com/).
+
+**Available Models:**
+- `openai/gpt-oss-120b` (default)
+- `llama-3.3-70b-versatile`
+- `llama-3.1-8b-instant`
+- `mixtral-8x7b-32768`
+- See [Groq Docs](https://console.groq.com/docs/models) for all available models
 
 ### 3. Start the Development Server
 ```bash
@@ -91,7 +100,7 @@ Click the trash icon in the chat header to clear all conversation history.
 
 ### Architecture
 ```
-User → ChatWidget → ChatContext → /api/chat → Google Gemini AI
+User → ChatWidget → ChatContext → /api/chat → Groq API
                               ↓
                         /api/portfolio/context (from database)
 ```
@@ -100,7 +109,7 @@ User → ChatWidget → ChatContext → /api/chat → Google Gemini AI
 1. User sends a message
 2. Message is saved to `chat_history` table
 3. Portfolio context is fetched from database (holdings, transactions, wallet)
-4. Message + context is sent to Google Gemini AI
+4. Message + context is sent to Groq API
 5. AI response is saved to `chat_history` table
 6. Response is displayed to user
 
@@ -113,10 +122,9 @@ The chatbot **does NOT** make any external API calls for stock quotes. It only u
 
 ## Cost
 
-### 100% FREE
-- **Google Gemini 1.5 Flash** - Free tier with generous limits
+- **Groq** - Requires API key from Groq Console (pricing varies by usage)
 - **No external quote APIs** - Uses only your database data
-- **No additional costs** - Everything runs on free tiers
+- **Database costs** - Supabase free tier should suffice
 
 ## Files Created
 
@@ -135,7 +143,7 @@ The chatbot **does NOT** make any external API calls for stock quotes. It only u
 - [`src/types/chat.ts`](src/types/chat.ts) - TypeScript types
 
 ### Libraries
-- [`src/lib/gemini.ts`](src/lib/gemini.ts) - Google Gemini AI client
+- [`src/lib/grok.ts`](src/lib/grok.ts) - Groq API client
 
 ### Database
 - [`supabase/migrations/20240129_create_chat_history.sql`](supabase/migrations/20240129_create_chat_history.sql) - Database schema
@@ -147,7 +155,8 @@ The chatbot **does NOT** make any external API calls for stock quotes. It only u
 
 ### Chatbot not responding
 1. Check that the database migration was run successfully
-2. Verify your Google Gemini API key is valid
+2. Verify your Groq API key is valid and has credits
+3. Check that the `GROQ_API_KEY` environment variable is set correctly
 3. Check browser console for errors
 
 ### Portfolio context not loading

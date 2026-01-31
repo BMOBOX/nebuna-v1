@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { supabase } from "@/lib/supabase";
-import { generateResponseWithSystem } from "@/lib/gemini";
+import { generateResponseWithSystem } from "@/lib/grok";
 import type { ChatMessage } from "@/types/chat";
 
 // System prompt for the AI assistant
@@ -18,12 +18,14 @@ IMPORTANT: You only have access to the portfolio data provided above. Work only 
 Guidelines:
 - Be concise but informative
 - Response should be detailed
-- Use ₹ for Indian Rupees
+- Use ₹ for Indian Rupees (1 USD = ₹92)
+- Do not use tables in response
 - If current price data is in USD convert it
 - Provide actionable insights
 - Always clarify you're providing educational info, not financial advice
 - Reference user's actual holdings when relevant
-- If asked for current stock prices, search on web for the current price`;
+- If asked for current stock prices, search on web for the current price
+- keep response under 150 words`;
 
 // GET: Fetch chat history for user
 export async function GET(req: NextRequest) {
