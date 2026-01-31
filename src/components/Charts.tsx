@@ -46,7 +46,10 @@ interface DrawingLine {
 }
 
 // Technical indicator calculation functions
-const calculateSMA = (data: Quote[], period: number): LineData<UTCTimestamp>[] => {
+const calculateSMA = (
+  data: Quote[],
+  period: number
+): LineData<UTCTimestamp>[] => {
   const sma: LineData<UTCTimestamp>[] = [];
   for (let i = period - 1; i < data.length; i++) {
     let sum = 0;
@@ -61,10 +64,13 @@ const calculateSMA = (data: Quote[], period: number): LineData<UTCTimestamp>[] =
   return sma;
 };
 
-const calculateEMA = (data: Quote[], period: number): LineData<UTCTimestamp>[] => {
+const calculateEMA = (
+  data: Quote[],
+  period: number
+): LineData<UTCTimestamp>[] => {
   const ema: LineData<UTCTimestamp>[] = [];
   const multiplier = 2 / (period + 1);
-  
+
   let emaValue = data[0].close;
   for (let i = 0; i < data.length; i++) {
     emaValue = (data[i].close - emaValue) * multiplier + emaValue;
@@ -76,32 +82,35 @@ const calculateEMA = (data: Quote[], period: number): LineData<UTCTimestamp>[] =
   return ema;
 };
 
-const calculateRSI = (data: Quote[], period: number = 14): LineData<UTCTimestamp>[] => {
+const calculateRSI = (
+  data: Quote[],
+  period: number = 14
+): LineData<UTCTimestamp>[] => {
   const rsi: LineData<UTCTimestamp>[] = [];
   let gains = 0;
   let losses = 0;
-  
+
   // Initial average gain/loss
   for (let i = 1; i <= period; i++) {
     const change = data[i].close - data[i - 1].close;
     if (change > 0) gains += change;
     else losses -= change;
   }
-  
+
   let avgGain = gains / period;
   let avgLoss = losses / period;
-  
+
   for (let i = period; i < data.length; i++) {
     const change = data[i].close - data[i - 1].close;
     const gain = change > 0 ? change : 0;
     const loss = change < 0 ? -change : 0;
-    
+
     avgGain = (avgGain * (period - 1) + gain) / period;
     avgLoss = (avgLoss * (period - 1) + loss) / period;
-    
+
     const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-    const rsiValue = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
-    
+    const rsiValue = avgLoss === 0 ? 100 : 100 - 100 / (1 + rs);
+
     rsi.push({
       time: Math.floor(new Date(data[i].date).getTime() / 1000) as UTCTimestamp,
       value: rsiValue,
@@ -110,10 +119,16 @@ const calculateRSI = (data: Quote[], period: number = 14): LineData<UTCTimestamp
   return rsi;
 };
 
-const calculateMACD = (data: Quote[]): { macd: LineData<UTCTimestamp>[]; signal: LineData<UTCTimestamp>[]; histogram: HistogramData<UTCTimestamp>[] } => {
+const calculateMACD = (
+  data: Quote[]
+): {
+  macd: LineData<UTCTimestamp>[];
+  signal: LineData<UTCTimestamp>[];
+  histogram: HistogramData<UTCTimestamp>[];
+} => {
   const ema12 = calculateEMA(data, 12);
   const ema26 = calculateEMA(data, 26);
-  
+
   const macd: LineData<UTCTimestamp>[] = [];
   for (let i = 0; i < ema12.length && i < ema26.length; i++) {
     macd.push({
@@ -121,11 +136,17 @@ const calculateMACD = (data: Quote[]): { macd: LineData<UTCTimestamp>[]; signal:
       value: ema12[i].value - ema26[i].value,
     });
   }
-  
+
   // Signal line (9-period EMA of MACD)
-  const signalData = macd.map((m, i) => ({ date: new Date(m.time * 1000).toISOString(), close: m.value, open: m.value, high: m.value, low: m.value }));
+  const signalData = macd.map((m, i) => ({
+    date: new Date(m.time * 1000).toISOString(),
+    close: m.value,
+    open: m.value,
+    high: m.value,
+    low: m.value,
+  }));
   const signal = calculateEMA(signalData, 9);
-  
+
   // Histogram
   const histogram: HistogramData<UTCTimestamp>[] = [];
   for (let i = 0; i < macd.length && i < signal.length; i++) {
@@ -135,7 +156,7 @@ const calculateMACD = (data: Quote[]): { macd: LineData<UTCTimestamp>[]; signal:
       color: macd[i].value - signal[i].value >= 0 ? "#26a69a" : "#ef5350",
     });
   }
-  
+
   return { macd, signal, histogram };
 };
 
@@ -168,7 +189,14 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
   const params = useParams();
   const stock = params.stock as string;
 
-  const colors = ["#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6", "#ec4899"];
+  const colors = [
+    "#3b82f6",
+    "#ef4444",
+    "#22c55e",
+    "#f59e0b",
+    "#8b5cf6",
+    "#ec4899",
+  ];
 
   // Track mouse position for tooltip
   useEffect(() => {
@@ -233,7 +261,7 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
     };
 
     fetchData();
-    const id = setInterval(fetchData, 20000);
+    const id = setInterval(fetchData, 300000);
     return () => clearInterval(id);
   }, [stock, interval]);
 
@@ -469,8 +497,14 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
               title: "Oversold (30)",
             });
 
-            const overboughtLine = rsiData.map((d) => ({ time: d.time, value: 70 }));
-            const oversoldLine = rsiData.map((d) => ({ time: d.time, value: 30 }));
+            const overboughtLine = rsiData.map((d) => ({
+              time: d.time,
+              value: 70,
+            }));
+            const oversoldLine = rsiData.map((d) => ({
+              time: d.time,
+              value: 30,
+            }));
             overboughtSeries.setData(overboughtLine);
             oversoldSeries.setData(oversoldLine);
           }
@@ -528,14 +562,14 @@ const Chart: React.FC<{ interval: string }> = ({ interval }) => {
     if (rsiChartRef.current && chartRef.current) {
       chartRef.current.timeScale().subscribeVisibleTimeRangeChange((range) => {
         if (range && rsiChartRef.current) {
-          rsiChartRef.current.timeScale().setVisibleTimeRange(range);
+          rsiChartRef.current.timeScale().setVisibleRange(range);
         }
       });
     }
     if (macdChartRef.current && chartRef.current) {
       chartRef.current.timeScale().subscribeVisibleTimeRangeChange((range) => {
         if (range && macdChartRef.current) {
-          macdChartRef.current.timeScale().setVisibleTimeRange(range);
+          macdChartRef.current.timeScale().setVisibleRange(range);
         }
       });
     }

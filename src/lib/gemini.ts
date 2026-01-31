@@ -73,6 +73,6 @@ export const generateResponseWithSystem = async (
 
   // Generate response
   const result = await chat.sendMessage(userMessage);
-  const response = await result.response;
+  const response = result.response;
   return response.text();
 };

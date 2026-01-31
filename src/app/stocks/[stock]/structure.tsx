@@ -273,193 +273,261 @@ export function Structure({
 
   return (
     <>
-      <div className="flex flex-col bg-zinc-900 min-h-screen text-white px-4 md:px-8 py-6">
-        {/* Header / Back + Wallet */}
-        <div className="w-full flex justify-between items-center mb-2">
-          <Link
-            href="/dashboard"
-            className="inline-block px-4 py-2 rounded-md hover:bg-zinc-800/30 transition font-medium hover:cursor-pointer"
-          >
-            ← Back to Dashboard
-          </Link>
-
-          <div className="w-64 flex justify-end">
-            <Search />
-          </div>
-        </div>
-
-        {/* Header with Centered Card and Wallet on Right */}
-        <div className="w-full flex items-center justify-center mb-8 relative">
-          {/* Centered Stock Card */}
-          <div className="bg-zinc-800/30 rounded-xl p-4 shadow-xl w-full max-w-sm border border-zinc-800">
-            <div className="text-center">
-              <h1 className="text-xl font-semibold">{data.shortName}</h1>
-              <p className="text-gray-400 text-sm">{data.symbol}</p>
-            </div>
-
-            <div className="mt-4 flex justify-center items-baseline">
-              <span className="text-3xl font-bold">
-                ₹{Math.round(inrPrice * 100) / 100}
-              </span>
-
-              {data.currency != "INR" && (
-                <span className="ml-2 text-gray-400 text-base">
-                  ({formatPrice(Math.round(price * 100) / 100, data.currency)})
+      <div className="flex flex-col bg-zinc-950 min-h-screen text-white">
+        {/* Professional Header Bar */}
+        <header className="w-full bg-zinc-900 border-b border-zinc-800 px-4 md:px-6 py-3">
+          <div className="flex items-center justify-between max-w-[1920px] mx-auto">
+            {/* Left: Back + Stock Info */}
+            <div className="flex items-center gap-6">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition text-zinc-400 hover:text-white"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                <span className="text-sm font-medium hidden sm:inline">
+                  Dashboard
                 </span>
-              )}
-            </div>
-          </div>
+              </Link>
 
-          {/* Wallet on right side */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2">
-            <div className="w-56 flex justify-end">
+              <div className="h-6 w-px bg-zinc-700" />
+
+              {/* Stock Info Compact */}
+              <div className="flex items-center gap-4">
+                <div>
+                  <h1 className="text-lg font-bold text-white">
+                    {data.shortName}
+                  </h1>
+                  <p className="text-xs text-zinc-500">{data.symbol}</p>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-white">
+                    ₹{Math.round(inrPrice * 100) / 100}
+                  </span>
+                  {data.currency != "INR" && (
+                    <span className="text-xs text-zinc-500">
+                      {formatPrice(
+                        Math.round(price * 100) / 100,
+                        data.currency
+                      )}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Search + Wallet */}
+            <div className="flex items-center gap-4">
+              <div className="w-48 hidden md:block">
+                <Search />
+              </div>
               <Wallet user={session?.user} />
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Main Grid */}
-        <div
-          className="flex-1 grid grid-cols-2 lg:grid-cols-3 gap-6"
-          style={{ minHeight: "500px" }}
-        >
-          {/* Chart */}
-          <div className="relative shadow-lg col-span-2 flex flex-col h-full bg-zinc-900 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-2 bg-zinc-900 border-b border-zinc-800">
-              <select
-                className="bg-zinc-800 text-white rounded px-3 py-1.5 text-sm border border-zinc-700 hover:border-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
-                value={interval}
-                onChange={(e) => setInterval(e.target.value)}
-              >
-                <option value="1m">1 Minute</option>
-                <option value="5m">5 Minutes</option>
-                <option value="15m">15 Minutes</option>
-                <option value="1h">1 Hour</option>
-                <option value="1d">1 Day</option>
-              </select>
-              <span className="text-xs text-zinc-500">Interval</span>
+        {/* Main Content - Full Width Layout */}
+        <main className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
+          {/* Chart Section - Takes remaining space */}
+          <div className="flex-1 flex flex-col min-h-[60vh] lg:min-h-0 bg-zinc-950">
+            {/* Chart Header with Interval */}
+            <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
+                  Interval
+                </span>
+                <select
+                  className="bg-zinc-800 text-white rounded px-3 py-1.5 text-sm border border-zinc-700 hover:border-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
+                  value={interval}
+                  onChange={(e) => setInterval(e.target.value)}
+                >
+                  <option value="1m">1m</option>
+                  <option value="5m">5m</option>
+                  <option value="15m">15m</option>
+                  <option value="1h">1h</option>
+                  <option value="1d">1d</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-zinc-500">
+                <span>Vol: {data.regularMarketVolume?.toLocaleString()}</span>
+                <span>P/E: {data.trailingPE || "N/A"}</span>
+              </div>
             </div>
 
-            <div className="flex-1 relative w-full">
+            {/* Chart - Full height */}
+            <div className="flex-1 relative">
               <Chart interval={interval} />
             </div>
           </div>
 
-          {/* Buy/Sell Panel */}
-          <div className="bg-zinc-900/50 rounded-md p-6 flex flex-col gap-6 shadow-xl border border-zinc-800 backdrop-blur-sm h-full">
-            {/* Header */}
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white">{stock}</h2>
-
-              <button
-                onClick={toggleWatchlist}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  watchlist
-                    ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 hover:cursor-pointer"
-                    : "bg-green-500/20 text-green-400 border border-green-500/40 hover:bg-green-500/30 hover:cursor-pointer"
-                }`}
-              >
-                {watchlist ? "Remove Watchlist" : "Add Watchlist"}
-              </button>
-            </div>
-
-            {/* Analyst Rating */}
-            <div className="bg-zinc-800/50 p-2 rounded-xl text-center border border-zinc-700">
-              <p className="text-gray-400 text-sm">Analyst Rating</p>
-              <p className="text-2xl font-bold mt-2 text-white">
-                {data.averageAnalystRating || "N/A"}
-              </p>
-            </div>
-
-            {/* Market Info */}
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center text-gray-300 text-sm">
-                <span>Market Volume</span>
-                <span className="bg-zinc-800/60 px-3 py-1 rounded-md border border-zinc-700 w-36 text-center">
-                  {data.regularMarketVolume?.toLocaleString()}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center text-gray-300 text-sm">
-                <span>52-Week Range</span>
-                <span className="bg-zinc-800/60 px-3 py-1 rounded-md border border-zinc-700 w-36 text-center">
-                  {data.fiftyTwoWeekLow} - {data.fiftyTwoWeekHigh}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center text-gray-300 text-sm">
-                <span>P/E Ratio</span>
-                <span className="bg-zinc-800/60 px-3 py-1 rounded-md border border-zinc-700 w-36 text-center">
-                  {data.trailingPE}
-                </span>
+          {/* Right Sidebar - Fixed width */}
+          <aside className="w-full lg:w-80 bg-zinc-900 border-l border-zinc-800 flex flex-col max-h-[40vh] lg:max-h-screen overflow-y-auto">
+            {/* Trading Panel Header */}
+            <div className="p-4 border-b border-zinc-800">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-white">{stock}</h2>
+                <button
+                  onClick={toggleWatchlist}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    watchlist
+                      ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30"
+                      : "bg-green-500/20 text-green-400 border border-green-500/40 hover:bg-green-500/30"
+                  }`}
+                >
+                  {watchlist ? "− Watchlist" : "+ Watchlist"}
+                </button>
               </div>
             </div>
 
-            {/* Day Range */}
-            <div className="flex gap-4">
-              <div className="flex-1 text-center">
-                <p className="text-gray-400 text-sm">Daily High</p>
-                <span className="bg-zinc-800/60 mt-1 block py-1.5 rounded-lg border border-zinc-700 text-white">
-                  {formatPrice(data.regularMarketDayRange?.high, data.currency)}
+            {/* Price Info */}
+            <div className="p-4 border-b border-zinc-800">
+              <div className="text-center mb-4">
+                <span className="text-3xl font-bold text-white">
+                  ₹{Math.round(inrPrice * 100) / 100}
+                </span>
+                {data.currency != "INR" && (
+                  <p className="text-xs text-zinc-500 mt-1">
+                    {formatPrice(Math.round(price * 100) / 100, data.currency)}
+                  </p>
+                )}
+              </div>
+
+              {/* Day Range */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Day High</p>
+                  <p className="text-white font-medium">
+                    {formatPrice(
+                      data.regularMarketDayRange?.high,
+                      data.currency
+                    )}
+                  </p>
+                </div>
+                <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Day Low</p>
+                  <p className="text-white font-medium">
+                    {formatPrice(
+                      data.regularMarketDayRange?.low,
+                      data.currency
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Company Info */}
+            <div className="p-4 border-b border-zinc-800 space-y-3">
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+                Company Info
+              </h3>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-zinc-500">Full Name</span>
+                <span className="text-white text-right max-w-[60%] truncate">
+                  {data.longName || data.shortName || "N/A"}
                 </span>
               </div>
-              <div className="flex-1 text-center">
-                <p className="text-gray-400 text-sm">Daily Low</p>
-                <span className="bg-zinc-800/60 mt-1 block py-1.5 rounded-lg border border-zinc-700 text-white">
-                  {formatPrice(data.regularMarketDayRange?.low, data.currency)}
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-zinc-500">Exchange</span>
+                <span className="text-white">{data.exchange || "N/A"}</span>
+              </div>
+            </div>
+
+            {/* Key Statistics */}
+            <div className="p-4 border-b border-zinc-800 space-y-3">
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+                Key Statistics
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Market Cap</p>
+                  <p className="text-white font-medium text-sm">
+                    {data.marketCap
+                      ? "₹" + (data.marketCap / 10000000).toFixed(2) + "Cr"
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Volume</p>
+                  <p className="text-white font-medium text-sm">
+                    {data.regularMarketVolume
+                      ? data.regularMarketVolume.toLocaleString()
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Market Stats */}
+            <div className="p-4 border-b border-zinc-800 space-y-3">
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+                Market Data
+              </h3>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-zinc-500">52W Range</span>
+                <span className="text-white">
+                  {data.fiftyTwoWeekLow || "N/A"} -{" "}
+                  {data.fiftyTwoWeekHigh || "N/A"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-zinc-500">Analyst Rating</span>
+                <span className="text-white font-medium">
+                  {data.averageAnalystRating || "N/A"}
                 </span>
               </div>
             </div>
 
-            {/* P&L / Buy Sell Section */}
-            <div className="border-t border-zinc-700 pt-4">
+            {/* Trading Actions */}
+            <div className="p-4 mt-auto">
               {owned ? (
-                <div className="text-center">
-                  <p className="text-xl font-semibold mb-4 text-gray-300">
-                    P&L:{" "}
-                    <span
-                      className={
+                <div className="space-y-4">
+                  <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
+                    <p className="text-zinc-400 text-sm">Position P&L</p>
+                    <p
+                      className={`text-2xl font-bold ${
                         profitLoss >= 0 ? "text-green-400" : "text-red-400"
-                      }
+                      }`}
                     >
                       {profitLoss >= 0 ? "+" : "-"}₹
                       {Math.abs(profitLoss).toFixed(2)}
-                    </span>
-                  </p>
-
+                    </p>
+                  </div>
                   <button
-                    className="w-full bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 rounded-md py-3 font-semibold transition hover:cursor-pointer"
+                    className="w-full bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 rounded-lg py-3 font-semibold transition"
                     onClick={closePosition}
                   >
                     Close Position
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4">
-                  <p className="text-center text-gray-400 text-sm">
-                    You do not own this stock.
-                  </p>
-
-                  <div className="flex gap-4">
-                    <button
-                      className="flex-1 bg-green-500/20 text-green-400 border border-green-500/40 hover:bg-green-500/30 py-3 rounded-md font-semibold transition hover:cursor-pointer"
-                      onClick={() => setBuyModalOpen(true)}
-                    >
-                      BUY
-                    </button>
-
-                    <button
-                      className="flex-1 bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 py-3 rounded-md font-semibold transition hover:cursor-pointer"
-                      onClick={() => setSellModalOpen(true)}
-                    >
-                      SELL
-                    </button>
-                  </div>
+                <div className="space-y-3">
+                  <button
+                    className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition"
+                    onClick={() => setBuyModalOpen(true)}
+                  >
+                    Buy {stock}
+                  </button>
+                  <button
+                    className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold transition"
+                    onClick={() => setSellModalOpen(true)}
+                  >
+                    Sell {stock}
+                  </button>
                 </div>
               )}
             </div>
-          </div>
-        </div>
+          </aside>
+        </main>
 
         {/* BUY MODAL */}
         {buyModalOpen && (
