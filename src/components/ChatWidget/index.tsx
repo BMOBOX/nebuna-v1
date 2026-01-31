@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
-import { MessageSquare, X, Trash2 } from "lucide-react";
+import React, { useRef, useEffect, useCallback } from "react";
+import { MessageSquare, X, Trash2, Mic, AlertCircle } from "lucide-react";
 import { useChat } from "@/context/ChatContext";
+import { useVoiceAssistant } from "@/hooks/useVoiceAssistant";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { QuickActions } from "./QuickActions";
@@ -48,6 +49,25 @@ export function ChatWidget() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Handle voice transcript completion - auto-send message
+  const handleTranscriptComplete = useCallback((transcript: string) => {
+    if (transcript.trim()) {
+      sendMessage(transcript.trim());
+    }
+  }, [sendMessage]);
+
+  const {
+    isListening,
+    transcript,
+    isSupported: isVoiceSupported,
+    error: voiceError,
+    isSpeaking,
+    startListening,
+    stopListening,
+    speak,
+    stopSpeaking,
+  } = useVoiceAssistant(handleTranscriptComplete);
+
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -74,6 +94,19 @@ export function ChatWidget() {
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
             Trading Assistant
           </h3>
+          {/* Voice indicator */}
+          {isVoiceSupported && (
+            <div className="flex items-center gap-1 ml-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isListening
+                    ? "bg-red-500 animate-pulse"
+                    : "bg-green-500"
+                }`}
+                title={isListening ? "Listening..." : "Voice ready"}
+              />
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -95,6 +128,13 @@ export function ChatWidget() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {voiceError && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-red-900/30 border border-red-800 rounded-lg text-red-400 text-sm">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{voiceError}</span>
+          </div>
+        )}
+
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <MessageSquare className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" />
@@ -102,12 +142,25 @@ export function ChatWidget() {
               Hi! I'm your trading assistant. Ask me anything about your
               portfolio or trading strategies.
             </p>
+            {isVoiceSupported && (
+              <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-500 mb-4">
+                <Mic className="w-4 h-4" />
+                <span>Click the microphone to speak</span>
+              </div>
+            )}
             <QuickActions actions={quickActions} onActionClick={sendMessage} />
           </div>
         ) : (
           <>
             {messages.map((message, index) => (
-              <ChatMessage key={index} message={message} />
+              <ChatMessage
+                key={index}
+                message={message}
+                isSpeaking={isSpeaking && message.role === "assistant"}
+                onSpeak={speak}
+                onStopSpeaking={stopSpeaking}
+                isVoiceSupported={isVoiceSupported}
+              />
             ))}
             {isLoading && (
               <div className="flex justify-start mb-4">
@@ -127,7 +180,15 @@ export function ChatWidget() {
 
       {/* Input */}
       <div className="p-4 border-t border-zinc-800 dark:border-zinc-800">
-        <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
+        <ChatInput
+          onSendMessage={sendMessage}
+          isLoading={isLoading}
+          isListening={isListening}
+          transcript={transcript}
+          onStartListening={startListening}
+          onStopListening={stopListening}
+          isVoiceSupported={isVoiceSupported}
+        />
       </div>
     </div>
   );
