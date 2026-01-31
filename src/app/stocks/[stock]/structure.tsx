@@ -280,7 +280,7 @@ export function Structure({
             {/* Left: Back + Stock Info */}
             <div className="flex items-center gap-6">
               <Link
-                href="/dashboard"
+                href="/dashboard/portfolio"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition text-zinc-400 hover:text-white"
               >
                 <svg
