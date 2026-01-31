@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Wallet from "./Wallet";
 import { Session } from "next-auth";
-import { Spotlight } from "lucide-react";
+import { Spotlight, Eye } from "lucide-react";
 
 function Sidebar({ user }: { user?: Session["user"] }) {
   const pathname = usePathname();
@@ -19,6 +19,7 @@ function Sidebar({ user }: { user?: Session["user"] }) {
     },
     { name: "Watchlist", icon: <FaStar />, href: "dashboard/watchlist" },
     { name: "Leaderboard", icon: <Spotlight />, href: "dashboard/leaderboard" },
+    { name: "Shadow Traders", icon: <Eye />, href: "dashboard/shadow-traders" },
   ];
 
   return (
