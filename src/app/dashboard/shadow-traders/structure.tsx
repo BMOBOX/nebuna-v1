@@ -12,6 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Holding {
   ticker: string;
@@ -70,9 +71,9 @@ function formatDate(dateString: string): string {
 // Get gradient colors based on investor index
 function getCardGradient(index: number): string {
   const gradients = [
-    "from-amber-500/10 via-orange-500/5 to-zinc-900/50",
-    "from-blue-500/10 via-cyan-500/5 to-zinc-900/50",
     "from-emerald-500/10 via-teal-500/5 to-zinc-900/50",
+    "from-blue-500/10 via-cyan-500/5 to-zinc-900/50",
+    "from-teal-500/10 to-zinc-900/50",
     "from-purple-500/10 via-violet-500/5 to-zinc-900/50",
     "from-rose-500/10 via-pink-500/5 to-zinc-900/50",
     "from-indigo-500/10 via-blue-500/5 to-zinc-900/50",
@@ -167,9 +168,12 @@ function InvestorCard({
                   <tr className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0">
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">
+                        <Link
+                          href={`/stocks/${holding.ticker}`}
+                          className="font-semibold text-blue-00"
+                        >
                           {holding.ticker}
-                        </span>
+                        </Link>
                         <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
                           <div
                             className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
