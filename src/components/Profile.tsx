@@ -6,6 +6,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
 import { useSession, signOut } from "next-auth/react";
 import { Session } from "next-auth";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Profile({ user }: { user?: Session["user"] }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,10 +44,12 @@ function Profile({ user }: { user?: Session["user"] }) {
   return (
     <div className="relative flex items-center justify-between ml-1 mr-1 pb-2">
       {/* Profile Button */}
-      <div
+      <motion.div
         ref={buttonRef}
         className="flex items-center w-full gap-2 p-2 rounded-lg cursor-pointer hover:bg-zinc-900 transition-colors duration-200"
         onClick={toggleWindow}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
         <div>
           <Image
@@ -67,22 +70,30 @@ function Profile({ user }: { user?: Session["user"] }) {
           </p>
         </div>
 
-        <div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <Image
             src="/unfold_more.svg"
             alt="Arrow Down"
             width={25}
             height={25}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Floating Window */}
-      {isOpen && (
-        <div
-          ref={menuRef}
-          className="absolute top-auto bottom-0 left-full ml-2 bg-zinc-900 text-white shadow-lg rounded-lg p-3 w-60 z-50"
-        >
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            ref={menuRef}
+            className="absolute top-auto bottom-0 left-full ml-2 bg-zinc-900 text-white shadow-lg rounded-lg p-3 w-60 z-50"
+            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, bounce: 0.4 }}
+          >
           {/* User Info */}
           <div className="flex items-center gap-2">
             <Image
@@ -128,8 +139,9 @@ function Profile({ user }: { user?: Session["user"] }) {
             {/* Tiny red pulse on hover */}
             <div className="absolute inset-0 bg-red-500 opacity-0 group-hover:opacity-10 transition-opacity" />
           </div>
-        </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

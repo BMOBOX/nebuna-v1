@@ -52,10 +52,10 @@ export function Structure({
           const response = await fetch(
             `https://api.exchangerate-api.com/v4/latest/${d.currency}`
           );
-          const data = await response.json();
-          const rates = data.rates;
-          setInrPrice(rates["INR"] * d.regularMarketPrice);
+          const rateData = await response.json();
+          const inrRate = rateData?.rates?.INR ?? 1;
           setPrice(d.regularMarketPrice);
+          setInrPrice(inrRate * d.regularMarketPrice);
         } else {
           setInrPrice(d.regularMarketPrice);
           setPrice(d.regularMarketPrice);

@@ -164,7 +164,10 @@ function InvestorCard({
                 const percentage =
                   totalValue > 0 ? (holding.valueUSD / totalValue) * 100 : 0;
                 return (
-                  <tr className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0">
+                  <tr
+                    key={`${investor.cik}-${holding.ticker}-${idx}`}
+                    className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0"
+                  >
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-white">

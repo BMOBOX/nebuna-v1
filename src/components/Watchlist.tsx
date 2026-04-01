@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import {
   Table,
   TableBody,
@@ -95,97 +96,120 @@ export default function WatchlistTable({
 
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight mb-6">
+      <motion.h1
+        className="text-3xl font-bold tracking-tight mb-6"
+        initial={{ opacity: 0, y: -20, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 12, bounce: 0.3 }}
+      >
         Watchlist ({items.length})
-      </h1>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead></TableHead>
-            <TableHead>Symbol</TableHead>
-            <TableHead>Stock Name</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-right">% Change</TableHead>
-            <TableHead className="text-center">Analyst Rating</TableHead>
-            <TableHead className="text-right">Volume</TableHead>
-            <TableHead className="text-right"></TableHead>
-          </TableRow>
-        </TableHeader>
+      </motion.h1>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Table>
+          <TableHeader>
+            <motion.tr
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <TableHead></TableHead>
+              <TableHead>Symbol</TableHead>
+              <TableHead>Stock Name</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+              <TableHead className="text-right">% Change</TableHead>
+              <TableHead className="text-center">Analyst Rating</TableHead>
+              <TableHead className="text-right">Volume</TableHead>
+              <TableHead className="text-right"></TableHead>
+            </motion.tr>
+          </TableHeader>
 
-        <TableBody>
-          {items.map((item, index) => {
-            const q = item.quote || {};
-            const price = q.regularMarketPrice ?? 0;
-            const percent = q.regularMarketChangePercent ?? 0;
-            const volume = q.regularMarketVolume ?? "--";
+          <TableBody>
+            {items.map((item, index) => {
+              const q = item.quote || {};
+              const price = q.regularMarketPrice ?? 0;
+              const percent = q.regularMarketChangePercent ?? 0;
+              const volume = q.regularMarketVolume ?? "--";
 
-            return (
-              <TableRow key={item.symbol}>
-                <TableCell className="text-muted-foreground">
-                  {index + 1}
-                </TableCell>
+              return (
+                <motion.tr
+                  key={item.symbol}
+                  initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 12, bounce: 0.3 }}
+                  whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+                >
+                  <TableCell className="text-muted-foreground">
+                    {index + 1}
+                  </TableCell>
 
-                <TableCell>
-                  <Link
-                    href={`/stocks/${item.symbol}`}
-                    className="text-blue-500 hover:underline"
-                  >
-                    {item.symbol}
-                  </Link>
-                </TableCell>
-
-                <TableCell className="capitalize">
-                  {q.shortName || "-"}
-                </TableCell>
-
-                <TableCell className="text-right font-medium">
-                  ₹{price.toLocaleString()}
-                </TableCell>
-
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    {percent > 0 && (
-                      <ArrowUpRight className="w-4 h-4 text-green-500" />
-                    )}
-                    {percent < 0 && (
-                      <ArrowDownRight className="w-4 h-4 text-red-500" />
-                    )}
-                    <span
-                      className={`font-semibold ${
-                        percent > 0
-                          ? "text-green-600"
-                          : percent < 0
-                            ? "text-red-600"
-                            : "text-muted-foreground"
-                      }`}
+                  <TableCell>
+                    <Link
+                      href={`/stocks/${item.symbol}`}
+                      className="text-blue-500 hover:underline"
                     >
-                      {percent > 0 ? "+" : ""}
-                      {percent.toFixed(2)}%
-                    </span>
-                  </div>
-                </TableCell>
+                      {item.symbol}
+                    </Link>
+                  </TableCell>
 
-                <TableCell className="text-center">
-                  {q.averageAnalystRating || "-"}
-                </TableCell>
+                  <TableCell className="capitalize">
+                    {q.shortName || "-"}
+                  </TableCell>
 
-                <TableCell className="text-right">
-                  {volume.toLocaleString()}
-                </TableCell>
+                  <TableCell className="text-right font-medium">
+                    ₹{price.toLocaleString()}
+                  </TableCell>
 
-                <TableCell className="text-right flex justify-end">
-                  <button
-                    onClick={() => handleRemove(item.symbol)}
-                    className="text-red-500 hover:text-red-700 flex items-center gap-1 hover:cursor-pointer underline"
-                  >
-                    Remove
-                  </button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {percent > 0 && (
+                        <ArrowUpRight className="w-4 h-4 text-green-500" />
+                      )}
+                      {percent < 0 && (
+                        <ArrowDownRight className="w-4 h-4 text-red-500" />
+                      )}
+                      <span
+                        className={`font-semibold ${
+                          percent > 0
+                            ? "text-green-600"
+                            : percent < 0
+                              ? "text-red-600"
+                              : "text-muted-foreground"
+                        }`}
+                      >
+                        {percent > 0 ? "+" : ""}
+                        {percent.toFixed(2)}%
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {q.averageAnalystRating || "-"}
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    {volume.toLocaleString()}
+                  </TableCell>
+
+                  <TableCell className="text-right flex justify-end">
+                    <motion.button
+                      onClick={() => handleRemove(item.symbol)}
+                      className="text-red-500 hover:text-red-700 flex items-center gap-1 hover:cursor-pointer underline"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Remove
+                    </motion.button>
+                  </TableCell>
+                </motion.tr>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </motion.div>
     </>
   );
 }

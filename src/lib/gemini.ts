@@ -67,6 +67,7 @@ export const generateResponseWithSystem = async (
       temperature: 0.7,
     },
     systemInstruction: {
+      role: "system",
       parts: [{ text: fullSystemPrompt }],
     },
   });

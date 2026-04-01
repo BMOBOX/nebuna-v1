@@ -8,6 +8,7 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { QuickActions } from "./QuickActions";
 import type { QuickAction } from "@/types/chat";
+import { motion, AnimatePresence } from "framer-motion";
 
 const quickActions: QuickAction[] = [
   {
@@ -75,18 +76,30 @@ export function ChatWidget() {
 
   if (!isOpen) {
     return (
-      <button
+      <motion.button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center z-50"
         aria-label="Open chat"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, bounce: 0.5 }}
       >
         <MessageSquare className="w-6 h-6" />
-      </button>
+      </motion.button>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-6rem)] bg-zinc-900 dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col z-50 border border-zinc-800 dark:border-zinc-800">
+    <AnimatePresence>
+      <motion.div
+        className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-6rem)] bg-zinc-900 dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col z-50 border border-zinc-800 dark:border-zinc-800"
+        initial={{ opacity: 0, scale: 0.5, y: 50 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.5, y: 50 }}
+        transition={{ type: "spring", stiffness: 300, bounce: 0.4 }}
+      >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 dark:border-zinc-800">
         <div className="flex items-center gap-2">
@@ -190,6 +203,7 @@ export function ChatWidget() {
           isVoiceSupported={isVoiceSupported}
         />
       </div>
-    </div>
+    </motion.div>
+    </AnimatePresence>
   );
 }

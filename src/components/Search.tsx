@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Search() {
   const [dat, setData] = useState("");
@@ -59,7 +60,11 @@ function Search() {
   return (
     <div ref={wrapperRef} className="relative" onFocus={show}>
       {/* Input Box */}
-      <label className="flex items-center gap-2 px-3 py-2 bg-zinc-900 rounded-lg border border-zinc-800 focus-within:border-blue-500 transition-all">
+      <motion.label
+        className="flex items-center gap-2 px-3 py-2 bg-zinc-900 rounded-lg border border-zinc-800 focus-within:border-blue-500 transition-all"
+        whileFocus={{ scale: 1.05, borderColor: "#3b82f6" }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, bounce: 0.4 }}
+      >
         <input
           type="text"
           placeholder="Search for stocks"
@@ -80,46 +85,58 @@ function Search() {
             clipRule="evenodd"
           />
         </svg>
-      </label>
+      </motion.label>
 
       {/* Results Box */}
-      {visible && (
-        <div
-          className={`absolute mt-2 w-80 bg-zinc-900 border border-zinc-900 rounded-lg p-1 max-h-80 overflow-y-auto shadow-lg z-50 ${
-            alignRight ? "right-0" : "left-0"
-          }`}
-        >
-          {com.length > 0 ? (
-            com.map(
-              (item: any, index) =>
-                (item.shortname || item.instrument_name || item.name) &&
-                ![
-                  "OPTION",
-                  "ETF",
-                  "MUTUALFUND",
-                  "CRYPTOCURRENCY",
-                  "FUTURE",
-                ].includes(item.quoteType) && (
-                  <Link
-                    key={index}
-                    href={`/stocks/${item.symbol}`}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      hide();
-                      handleLinkClick(item.symbol);
-                    }}
-                    className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md transition"
-                    prefetch
-                  >
-                    {item.shortname || item.instrument_name || item.name} ({item.symbol})
-                  </Link>
-                )
-            )
-          ) : (
-            <div className="text-gray-500 px-3 py-2 w-full">No results</div>
-          )}
-        </div>
-      )}
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            className={`absolute mt-2 w-80 bg-zinc-900 border border-zinc-900 rounded-lg p-1 max-h-80 overflow-y-auto shadow-lg z-50 ${
+              alignRight ? "right-0" : "left-0"
+            }`}
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, bounce: 0.3 }}
+          >
+            {com.length > 0 ? (
+              com.map(
+                (item: any, index) =>
+                  (item.shortname || item.instrument_name || item.name) &&
+                  ![
+                    "OPTION",
+                    "ETF",
+                    "MUTUALFUND",
+                    "CRYPTOCURRENCY",
+                    "FUTURE",
+                  ].includes(item.quoteType) && (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                    >
+                      <Link
+                        href={`/stocks/${item.symbol}`}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          hide();
+                          handleLinkClick(item.symbol);
+                        }}
+                        className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md transition"
+                        prefetch
+                      >
+                        {item.shortname || item.instrument_name || item.name} ({item.symbol})
+                      </Link>
+                    </motion.div>
+                  )
+              )
+            ) : (
+              <div className="text-gray-500 px-3 py-2 w-full">No results</div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

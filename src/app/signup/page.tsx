@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 // Validation with username
 const signupSchema = Yup.object().shape({
@@ -95,8 +96,20 @@ export default function Signup() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
       <Header showLogo={false} />
-      <div className="w-96 rounded-xl bg-[#141414] p-8 text-white shadow-2xl">
-        <h2 className="mb-2 text-center text-3xl font-bold">Sign up</h2>
+      <motion.div
+        className="w-96 rounded-xl bg-[#141414] p-8 text-white shadow-2xl"
+        initial={{ opacity: 0, y: 30, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, bounce: 0.4 }}
+      >
+        <motion.h2
+          className="mb-2 text-center text-3xl font-bold"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          Sign up
+        </motion.h2>
         <p className="mb-8 text-center text-gray-500">Create your account</p>
 
         {errorMsg && (
@@ -233,7 +246,7 @@ export default function Signup() {
             Sign in
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

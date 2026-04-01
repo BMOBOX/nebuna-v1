@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   Table,
   TableBody,
@@ -104,104 +105,134 @@ export default function PortfolioTable({ stocks = [] }: { stocks?: any[] }) {
       minimumFractionDigits: 2,
     }).format(value || 0);
 
+  // Animation variants
+  const tableVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  };
+
+  const rowVariants = {
+    hidden: { opacity: 0, x: -30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 12, bounce: 0.3 },
+    },
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Type</TableHead>
-          <TableHead>Symbol</TableHead>
-          <TableHead>Stock Name</TableHead>
-          <TableHead>Bought On</TableHead>
-          <TableHead className="text-right">Qty</TableHead>
-          <TableHead className="text-right">Buy Price</TableHead>
-          <TableHead className="text-right">Current Price</TableHead>
-          <TableHead className="text-right">P&L</TableHead>
-        </TableRow>
-      </TableHeader>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={tableVariants}
+    >
+      <Table>
+        <TableHeader>
+          <motion.tr variants={rowVariants}>
+            <TableHead>Type</TableHead>
+            <TableHead>Symbol</TableHead>
+            <TableHead>Stock Name</TableHead>
+            <TableHead>Bought On</TableHead>
+            <TableHead className="text-right">Qty</TableHead>
+            <TableHead className="text-right">Buy Price</TableHead>
+            <TableHead className="text-right">Current Price</TableHead>
+            <TableHead className="text-right">P&L</TableHead>
+          </motion.tr>
+        </TableHeader>
 
-      <TableBody>
-        {items.map((item, index) => {
-          const quote = item.quote || {};
-          const live = item.liveINR || 0;
-          const buy = item.stock_price;
+        <TableBody>
+          {items.map((item, index) => {
+            const quote = item.quote || {};
+            const live = item.liveINR || 0;
+            const buy = item.stock_price;
 
-          const totalBuy = buy * item.quantity;
-          const totalLive = live * item.quantity;
-          const pnl = totalLive - totalBuy;
+            const totalBuy = buy * item.quantity;
+            const totalLive = live * item.quantity;
+            const pnl = totalLive - totalBuy;
 
-          return (
-            <TableRow key={item.stock_name + index}>
-              {/* TYPE */}
-              <TableCell>
-                <Badge
-                  className={
-                    item.type === "BUY"
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-red-600 hover:bg-red-700"
-                  }
-                >
-                  {item.type}
-                </Badge>
-              </TableCell>
-
-              {/* SYMBOL */}
-              <TableCell>
-                <Link
-                  href={`/stocks/${item.stock_name}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {item.stock_name}
-                </Link>
-              </TableCell>
-
-              {/* STOCK NAME */}
-              <TableCell>{quote.shortName || "-"}</TableCell>
-
-              {/* DATE */}
-              <TableCell>
-                {new Date(item.created_at).toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </TableCell>
-
-              {/* QTY */}
-              <TableCell className="text-right">{item.quantity}</TableCell>
-
-              {/* BUY PRICE */}
-              <TableCell className="text-right">{formatINR(buy)}</TableCell>
-
-              {/* LIVE PRICE IN INR */}
-              <TableCell className="text-right">{formatINR(live)}</TableCell>
-
-              {/* PNL */}
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-1">
-                  {pnl > 0 && (
-                    <ArrowUpRight className="w-4 h-4 text-green-500" />
-                  )}
-                  {pnl < 0 && (
-                    <ArrowDownRight className="w-4 h-4 text-red-500" />
-                  )}
-
-                  <span
-                    className={`font-semibold ${
-                      pnl > 0
-                        ? "text-green-600"
-                        : pnl < 0
-                          ? "text-red-600"
-                          : "text-gray-400"
-                    }`}
+            return (
+              <motion.tr
+                key={item.stock_name + index}
+                variants={rowVariants}
+                initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+              >
+                {/* TYPE */}
+                <TableCell>
+                  <Badge
+                    className={
+                      item.type === "BUY"
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-red-600 hover:bg-red-700"
+                    }
                   >
-                    {formatINR(pnl)}
-                  </span>
-                </div>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                    {item.type}
+                  </Badge>
+                </TableCell>
+
+                {/* SYMBOL */}
+                <TableCell>
+                  <Link
+                    href={`/stocks/${item.stock_name}`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    {item.stock_name}
+                  </Link>
+                </TableCell>
+
+                {/* STOCK NAME */}
+                <TableCell>{quote.shortName || "-"}</TableCell>
+
+                {/* DATE */}
+                <TableCell>
+                  {new Date(item.created_at).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </TableCell>
+
+                {/* QTY */}
+                <TableCell className="text-right">{item.quantity}</TableCell>
+
+                {/* BUY PRICE */}
+                <TableCell className="text-right">{formatINR(buy)}</TableCell>
+
+                {/* LIVE PRICE IN INR */}
+                <TableCell className="text-right">{formatINR(live)}</TableCell>
+
+                {/* PNL */}
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    {pnl > 0 && (
+                      <ArrowUpRight className="w-4 h-4 text-green-500" />
+                    )}
+                    {pnl < 0 && (
+                      <ArrowDownRight className="w-4 h-4 text-red-500" />
+                    )}
+
+                    <span
+                      className={`font-semibold ${
+                        pnl > 0
+                          ? "text-green-600"
+                          : pnl < 0
+                            ? "text-red-600"
+                            : "text-gray-400"
+                      }`}
+                    >
+                      {formatINR(pnl)}
+                    </span>
+                  </div>
+                </TableCell>
+              </motion.tr>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { motion } from "framer-motion";
 
 const COLORS = [
   "#F13C59", // red
@@ -26,7 +27,12 @@ export default function PortfolioPieChart({ stocks }: { stocks?: any[] }) {
   }));
 
   return (
-    <div className="w-72 h-60 bg-zinc-900/40 border rounded-lg shadow-sm">
+    <motion.div
+      className="w-72 h-60 bg-zinc-900/40 border rounded-lg shadow-sm"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 15, bounce: 0.4 }}
+    >
       <h3 className="text-xs font-semibold text-gray-300 text-center mt-2">
         Portfolio Quantity Distribution
       </h3>
@@ -88,6 +94,6 @@ export default function PortfolioPieChart({ stocks }: { stocks?: any[] }) {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

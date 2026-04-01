@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Wallet from "./Wallet";
 import { Session } from "next-auth";
-import { Spotlight, Eye } from "lucide-react";
+import { Spotlight, Eye, HelpCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 function Sidebar({ user }: { user?: Session["user"] }) {
   const pathname = usePathname();
@@ -20,7 +21,34 @@ function Sidebar({ user }: { user?: Session["user"] }) {
     { name: "Watchlist", icon: <FaStar />, href: "dashboard/watchlist" },
     { name: "Leaderboard", icon: <Spotlight />, href: "dashboard/leaderboard" },
     { name: "Shadow Traders", icon: <Eye />, href: "dashboard/shadow-traders" },
+    { name: "Guide", icon: <HelpCircle />, href: "dashboard/guide" },
   ];
+
+  // Animation variants for nav items
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 10,
+        bounce: 0.3,
+      },
+    },
+  };
 
   return (
     <aside className="flex flex-col justify-between h-screen w-64 bg-zinc-950 border-r border-zinc-900">
@@ -37,26 +65,32 @@ function Sidebar({ user }: { user?: Session["user"] }) {
         <Wallet user={user} />
 
         {/* Navigation */}
-        <nav className="flex flex-col mt-8 px-2 gap-2">
+        <motion.nav
+          className="flex flex-col mt-8 px-2 gap-2"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
-                key={item.name}
-                href={`/${item.href}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-zinc-800 text-white font-semibold"
-                    : "text-gray-300 hover:bg-zinc-900 hover:text-white"
-                }`}
-                prefetch
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.name}</span>
-              </Link>
+              <motion.div key={item.name} variants={itemVariants}>
+                <Link
+                  href={`/${item.href}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-zinc-800 text-white font-semibold"
+                      : "text-gray-300 hover:bg-zinc-900 hover:text-white"
+                  }`}
+                  prefetch
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span>{item.name}</span>
+                </Link>
+              </motion.div>
             );
           })}
-        </nav>
+        </motion.nav>
       </div>
 
       {/* Profile at Bottom */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 // ---------- SERVER OR CLIENT CURRENCY CONVERTER ----------
 async function convertToINR(amount: number, currency: string) {
@@ -94,7 +95,12 @@ export default function PnLCard({
   const isLoss = pnl < 0;
 
   return (
-    <div className="w-full max-w-sm p-4 rounded-xl bg-zinc-900/40 border shadow-sm flex flex-col gap-4 mb-8">
+    <motion.div
+      className="w-full max-w-sm p-4 rounded-xl bg-zinc-900/40 border shadow-sm flex flex-col gap-4 mb-8"
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 15, bounce: 0.4 }}
+    >
       <div>
         <h2 className="text-xl font-semibold">Portfolio Summary</h2>
         <p className="text-sm text-muted-foreground">
@@ -105,11 +111,25 @@ export default function PnLCard({
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <span className="text-sm text-muted-foreground">Invested Value</span>
-          <span className="font-medium">₹{investedValue.toLocaleString()}</span>
+          <motion.span
+            className="font-medium"
+            key={investedValue}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+          >
+            ₹{investedValue.toLocaleString()}
+          </motion.span>
         </div>
         <div className="flex justify-between">
           <span className="text-sm text-muted-foreground">Current Value</span>
-          <span className="font-medium">₹{currentValue.toLocaleString()}</span>
+          <motion.span
+            className="font-medium"
+            key={currentValue}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+          >
+            ₹{currentValue.toLocaleString()}
+          </motion.span>
         </div>
       </div>
 
@@ -118,7 +138,7 @@ export default function PnLCard({
       <div className="flex justify-between items-center">
         <div>
           <p className="text-sm text-muted-foreground">Overall P&L</p>
-          <h3
+          <motion.h3
             className={`text-2xl font-bold ${
               isProfit
                 ? "text-green-600"
@@ -126,12 +146,15 @@ export default function PnLCard({
                 ? "text-red-600"
                 : "text-muted-foreground"
             }`}
+            key={pnl}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
           >
             ₹{pnl.toLocaleString()}
-          </h3>
+          </motion.h3>
         </div>
 
-        <div
+        <motion.div
           className={`flex items-center gap-1 text-lg font-semibold ${
             isProfit
               ? "text-green-600"
@@ -139,13 +162,16 @@ export default function PnLCard({
               ? "text-red-600"
               : "text-muted-foreground"
           }`}
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", bounce: 0.4 }}
         >
           {isProfit && <ArrowUpRight className="w-5 h-5" />}
           {isLoss && <ArrowDownRight className="w-5 h-5" />}
           {pnlPercent > 0 ? "+" : ""}
           {pnlPercent.toFixed(2)}%
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
