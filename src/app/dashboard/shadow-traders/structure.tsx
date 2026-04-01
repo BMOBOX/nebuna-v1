@@ -12,6 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Holding {
   ticker: string;
@@ -70,9 +71,9 @@ function formatDate(dateString: string): string {
 // Get gradient colors based on investor index
 function getCardGradient(index: number): string {
   const gradients = [
-    "from-amber-500/10 via-orange-500/5 to-zinc-900/50",
-    "from-blue-500/10 via-cyan-500/5 to-zinc-900/50",
     "from-emerald-500/10 via-teal-500/5 to-zinc-900/50",
+    "from-blue-500/10 via-cyan-500/5 to-zinc-900/50",
+    "from-teal-500/10 to-zinc-900/50",
     "from-purple-500/10 via-violet-500/5 to-zinc-900/50",
     "from-rose-500/10 via-pink-500/5 to-zinc-900/50",
     "from-indigo-500/10 via-blue-500/5 to-zinc-900/50",
@@ -160,38 +161,44 @@ function InvestorCard({
               </tr>
             </thead>
             <tbody>
-              {investor.topHoldings.map((holding, idx) => {
-                const percentage =
-                  totalValue > 0 ? (holding.valueUSD / totalValue) * 100 : 0;
-                return (
-                  <tr
-                    key={`${investor.cik}-${holding.ticker}-${idx}`}
-                    className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0"
-                  >
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">
-                          {holding.ticker}
-                        </span>
-                        <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
-                            style={{ width: `${Math.max(percentage, 5)}%` }}
-                          />
-                        </div>
+              {investor.topHoldings.map((holding, idx) => (
+                <tr
+                  key={`${idx}`}
+                  className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0"
+                >
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/stocks/${holding.ticker}`}
+                        className="font-semibold text-blue-600"
+                      >
+                        {holding.ticker}
+                      </Link>
+                      <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
+                          style={{
+                            width: `${Math.max(
+                              totalValue > 0
+                                ? (holding.valueUSD / totalValue) * 100
+                                : 0,
+                              5
+                            )}%`,
+                          }}
+                        />
                       </div>
-                    </td>
-                    <td className="px-3 py-2 text-right text-zinc-400">
-                      {formatShares(holding.shares)}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <span className="font-medium text-emerald-400">
-                        {formatNumber(holding.valueUSD)}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 text-right text-zinc-400">
+                    {formatShares(holding.shares)}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <span className="font-medium text-emerald-400">
+                      {formatNumber(holding.valueUSD)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

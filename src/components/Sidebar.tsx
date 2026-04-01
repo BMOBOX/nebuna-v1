@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Wallet from "./Wallet";
 import { Session } from "next-auth";
-import { Spotlight, Eye, HelpCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Spotlight, Eye, BarChart2, HelpCircle } from "lucide-react";
+import { motion } from "motion/react";
 
 function Sidebar({ user }: { user?: Session["user"] }) {
   const pathname = usePathname();
@@ -22,6 +22,7 @@ function Sidebar({ user }: { user?: Session["user"] }) {
     { name: "Leaderboard", icon: <Spotlight />, href: "dashboard/leaderboard" },
     { name: "Shadow Traders", icon: <Eye />, href: "dashboard/shadow-traders" },
     { name: "Guide", icon: <HelpCircle />, href: "dashboard/guide" },
+    { name: "Backtest", icon: <BarChart2 />, href: "dashboard/backtest" },
   ];
 
   // Animation variants for nav items
