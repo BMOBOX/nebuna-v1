@@ -161,38 +161,44 @@ function InvestorCard({
               </tr>
             </thead>
             <tbody>
-              {investor.topHoldings.map((holding, idx) => {
-                const percentage =
-                  totalValue > 0 ? (holding.valueUSD / totalValue) * 100 : 0;
-                return (
-                  <tr className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0">
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/stocks/${holding.ticker}`}
-                          className="font-semibold text-blue-00"
-                        >
-                          {holding.ticker}
-                        </Link>
-                        <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
-                            style={{ width: `${Math.max(percentage, 5)}%` }}
-                          />
-                        </div>
+              {investor.topHoldings.map((holding, idx) => (
+                <tr
+                  key={`${idx}`}
+                  className="border-b border-zinc-800/30 transition-colors hover:bg-zinc-800/20 last:border-0"
+                >
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/stocks/${holding.ticker}`}
+                        className="font-semibold text-blue-600"
+                      >
+                        {holding.ticker}
+                      </Link>
+                      <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
+                          style={{
+                            width: `${Math.max(
+                              totalValue > 0
+                                ? (holding.valueUSD / totalValue) * 100
+                                : 0,
+                              5
+                            )}%`,
+                          }}
+                        />
                       </div>
-                    </td>
-                    <td className="px-3 py-2 text-right text-zinc-400">
-                      {formatShares(holding.shares)}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <span className="font-medium text-emerald-400">
-                        {formatNumber(holding.valueUSD)}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 text-right text-zinc-400">
+                    {formatShares(holding.shares)}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <span className="font-medium text-emerald-400">
+                      {formatNumber(holding.valueUSD)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
